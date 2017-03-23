@@ -1,0 +1,77 @@
+<?php require('functions.php'); ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Construction</title>
+
+    <!-- jQuery CDN -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous">
+    </script>
+    <!-- MathJax CDN. Configure to allow ASCIIMath, $...$ delimeters -->
+    <script type="text/x-mathjax-config">
+	    MathJax.Hub.Config({
+	      tex2jax: {
+	        inlineMath: [['$','$'], ['\\(','\\)']],
+	        processEscapes: true
+	      }
+	    });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- JSXGraph CDN -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.99.5/jsxgraphcore.js"></script>
+    <!-- Custom Script to Handle Pretty Graphing -->
+    <script src="main.js"></script>
+
+    <!-- Link PrettyGraph CSS -->
+    <link rel="stylesheet" href="main.css">
+
+
+</head>
+<body>
+
+    <h1>Pretty Grapher</h1>
+    <p>
+        Some Instructions here
+    </p>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-5">
+            <h1>Graphing Window</h1>
+            <p>
+                Controls for graphing window: ticksDistance, bounding box, box size, etc.
+            </p>
+            <ul>
+                <li>
+                    Graph Width/Height (in pixels):
+                    <input type="text" id="graphWidth" class="graphSize smallInput"> /
+                    <input type="text" id="graphHeight" class="graphSize smallInput">
+                </li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+
+            <hr>
+
+            <h1>Add Elements</h1>
+            <p>
+                Controls For Adding Elements
+            </p>
+        </div>
+        <div class="col-7">
+
+            <div id="box" style='margin:0px auto'></div>
+
+        </div>
+    </div>
+
+</body>
+</html>
