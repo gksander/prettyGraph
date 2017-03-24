@@ -273,6 +273,12 @@ PG.addNewElement = function(){
             PG.els[id].fillOpacity = 0;
             PG.els[id].dash = 0;
             break;
+        case "inequality":
+            PG.els[id].line = "";
+            PG.els[id].inverse = false;
+            PG.els[id].fillColor = "red";
+            PG.els[id].fillOpacity = 0.5;
+            break;
     }
 
     PG.buildElementHtml(PG.els[id]);
@@ -370,6 +376,20 @@ PG.buildElementHtml = function(ops){
             `;
             break;
 
+        case "inequality":
+            var os = `
+                <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Inequality: <span class='elId'>${ops.id}</span></p>
+                    <ul>
+                        <li>Line: <input type='text' class='element_ineqLine' size=8 value='${ops.line}'></li>
+                        <li>Inverse: <input class='element_ineqInvert' type='checkbox' ${ops.inverse ? 'checked' : ''} /></li>
+                        <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
+                        <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
+                    </ul>
+                </li>
+            `;
+            break;
+
     }
     $("ul#elementList").append(os);
 
@@ -378,6 +398,7 @@ PG.buildElementHtml = function(ops){
 // BUILD BOARD element
 PG.buildBoardElement = function(ops){
     var id = ops.id;
+    try {
     // Build based on element type
     switch (ops.type){
         case "functiongraph":
@@ -494,7 +515,21 @@ PG.buildBoardElement = function(ops){
 
             PG.tmp[id] = PG.board.create('circle', [start, math.eval(ops.r)], ats);
             break;
+
+        case "inequality":
+            var ats = {
+                fixed: true,
+                highlight: false,
+                fillColor: ops.fillColor,
+                fillOpacity: ops.fillOpacity,
+                inverse: ops.inverse
+            }
+            PG.tmp[id] = PG.board.create('inequality', [PG.tmp[ops.line]], ats);
+
+            break;
     }
+
+    }catch (err){}
 }
 
 
@@ -669,6 +704,29 @@ $(function(){
         PG.board.removeObject(PG.tmp[id]);
         PG.buildBoardElement(PG.els[id]);
         PG.board.update();
+    });
+
+    // WHEN INEQUALITY LINE IS CHANGED
+    $("#elementList").on("change", ".element_ineqLine", function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var line = $(this).val();
+        PG.els[id].line = line;
+
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+    });
+    // WHEN INEQUALITY IS INVERTED
+    $("#elementList").on("change", ".element_ineqInvert", function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var inverse = $(this).is(":checked");
+        PG.els[id].inverse = inverse;
+
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+        // PG.tmp[id].setAttribute({inverse: true});
+        // PG.board.fullUpdate();
     });
 
 
