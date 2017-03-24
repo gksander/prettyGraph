@@ -28,12 +28,13 @@ $(function(){ // On document ready
         $(this).closest('.panel-large').find('.panel-large-body').slideToggle();
     });
 
-    $("#elementList").on('click', '.elId', function(){
-        $("#hide").val($(this).text());
-        var dd = document.querySelector("#hide");
-        dd.select();
-        var succ = document.execCommand('copy');
-    })
+    // Open/Close sidebar
+    $("#menubutton").on('click', function(){
+		$("body").toggleClass("sidebar-shown");
+	});
+    $("#content-overlay").on('click', function(){
+		$("body").toggleClass("sidebar-shown");
+	});
 
 });
 
@@ -255,6 +256,7 @@ PG.addNewElement = function(){
             PG.els[id].dash = 0;
             PG.els[id].arrow = 0;
             PG.els[id].ends = 0;
+            PG.els[id].visible = 1;
             break;
         case "text":
             PG.els[id].loc = '(1, 1)';
@@ -277,7 +279,7 @@ PG.addNewElement = function(){
             PG.els[id].line = "";
             PG.els[id].inverse = false;
             PG.els[id].fillColor = "red";
-            PG.els[id].fillOpacity = 0.5;
+            PG.els[id].fillOpacity = 0.3;
             break;
     }
 
@@ -301,7 +303,7 @@ PG.buildElementHtml = function(ops){
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Function Graph: <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Function Graph: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
@@ -309,6 +311,7 @@ PG.buildElementHtml = function(ops){
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
                         <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
                         <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -317,12 +320,13 @@ PG.buildElementHtml = function(ops){
         case "point":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Point: <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Point: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Location: <input type='text' class='element_pointLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('size', {size: ops.size})}</li>
                         <li>${PG.buildAestheticComponent('name', {name: ops.name})}</li>
                         <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -331,7 +335,7 @@ PG.buildElementHtml = function(ops){
         case "line":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Line (Segment): <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Line (Segment): <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Start Location: <input type='text' class='element_segmentStartLoc' size=12 value='${ops.startLoc}'></li>
                         <li>Ending Location: <input type='text' class='element_segmentEndLoc' size=12 value='${ops.endLoc}'></li>
@@ -340,6 +344,7 @@ PG.buildElementHtml = function(ops){
                         <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
                         <li>${PG.buildAestheticComponent('arrow', {arrow: ops.arrow})}</li>
                         <li>${PG.buildAestheticComponent('end', {arrow: ops.end})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -348,12 +353,13 @@ PG.buildElementHtml = function(ops){
         case "text":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Text: <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Text: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Text: <input type='text' class='element_text' size=15 value='${ops.text}'/></li>
                         <li>Location: <input type='text' class='element_textLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('fontSize', {fontSize: ops.fontSize})}</li>
                         <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -362,7 +368,7 @@ PG.buildElementHtml = function(ops){
         case "circle":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Circle: <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Circle: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Center: <input type='text' class='element_circleLoc' size=8 value='${ops.loc}'></li>
                         <li>Radius: <input type='text' class='element_circleR' size='8' value='${ops.r}'/></li>
@@ -379,12 +385,13 @@ PG.buildElementHtml = function(ops){
         case "inequality":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Inequality: <span class='elId'>${ops.id}</span></p>
+                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Inequality: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Line: <input type='text' class='element_ineqLine' size=8 value='${ops.line}'></li>
                         <li>Inverse: <input class='element_ineqInvert' type='checkbox' ${ops.inverse ? 'checked' : ''} /></li>
                         <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
                         <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -543,7 +550,7 @@ PG.buildAestheticComponent = function(type, ops){
     switch (type) {
         case "size":
             return `
-                Size: <input class='element_sizeRange' type='range' min='1' max='9' step='1' value='${ops.size ? ops.size : 3}'>
+                Size: <input class='element_sizeRange long-range' type='range' min='1' max='9' step='1' value='${ops.size ? ops.size : 3}'>
             `;
             break;
         case "name":
@@ -570,37 +577,43 @@ PG.buildAestheticComponent = function(type, ops){
 
         case "fillOpacity":
             return `
-                Fill Opacity: <input class='element_fillOpacity' type='range' min='0' max='1' step='0.01' value='${ops.fillOpacity ? ops.fillOpacity : 0}' />
+                Fill Opacity: <input class='element_fillOpacity long-range' type='range' min='0' max='1' step='0.01' value='${ops.fillOpacity ? ops.fillOpacity : 0}' />
             `;
             break;
 
         case "strokeWidth":
             return `
-                Stroke Width: <input class='element_strokeWidth' type='range' min='1' max='7' step='1' value='${ops.strokeWidth ? ops.strokeWidth : 3}'/>
+                Stroke Width: <input class='element_strokeWidth long-range' type='range' min='1' max='7' step='1' value='${ops.strokeWidth ? ops.strokeWidth : 3}'/>
             `;
             break;
 
         case "dash":
             return `
-                Dash: <input class='element_dash' type='range' min='0' max='6' step='1' value='${ops.dash ? ops.dash : 0}'/>
+                Dash: <input class='element_dash long-range' type='range' min='0' max='6' step='1' value='${ops.dash ? ops.dash : 0}'/>
             `;
             break;
 
         case "arrow":
             return `
-                Arrow: <input class='element_arrow' type='range' min='0' max='3' step='1' value='${ops.arrow ? ops.arrow : 0}'/>
+                Arrow: <input class='element_arrow medium-range' type='range' min='0' max='3' step='1' value='${ops.arrow ? ops.arrow : 0}'/>
             `;
             break;
 
         case "end":
             return `
-                Ending: <input class='element_end' type='range' min='0' max='3' step='1' value='${ops.end ? ops.end : 0}'/>
+                Ending: <input class='element_end medium-range' type='range' min='0' max='3' step='1' value='${ops.end ? ops.end : 0}'/>
             `;
             break;
 
         case "fontSize":
             return `
                 Font Size: <input class='element_fontSize' type='text' size='8' value='${ops.fontSize ? ops.fontSize : 18}'/>
+            `;
+            break;
+
+        case "visible":
+            return `
+                Visible: <input type='range' class='element_visible short-range' min='0' max='1' step='1' value='${ops.visible ? ops.visible : 1}'/>
             `;
             break;
 
@@ -831,6 +844,14 @@ $(function(){
         var fontSize = parseInt($(this).val());
         PG.els[id].fontSize = fontSize;
         PG.tmp[id].setAttribute({fontSize: fontSize});
+    });
+
+    // WHEN VISIBLE IS CHANGEd
+    $("#elementList").on('input', '.element_visible', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var visible = $(this).val();
+        PG.els[id].visible = visible;
+        PG.tmp[id].setAttribute({visible: visible==0 ? false : true});
     });
 
 });
