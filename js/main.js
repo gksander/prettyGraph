@@ -32,9 +32,17 @@ $(function(){ // On document ready
     $("#menubutton").on('click', function(){
 		$("body").toggleClass("sidebar-shown");
 	});
+
     $("#content-overlay").on('click', function(){
-		$("body").toggleClass("sidebar-shown");
+        if ($("body").hasClass("modal-shown")) {
+            $("body").removeClass("modal-shown");
+        } else {
+            $("body").removeClass("sidebar-shown");
+        }
 	});
+    $("#closeModal").on("click", function(){
+        $("body").removeClass("modal-shown");
+    });
 
 });
 
@@ -99,7 +107,8 @@ PG.registerListeners = function(){
 
     // Add new element
     // $("#addElement").on('click', PG.addNewElement);
-    $("#newElementType").on('change', PG.addNewElement);
+    // $("#newElementType").on('change', PG.addNewElement);
+    $("#newElementAddButton").on("click", PG.addNewElement);
 
     // Remove element when X is clicked next to item details
     $(document).on('click', ".deleteItem", function(){
@@ -248,10 +257,23 @@ PG.pullStoredElements = function(){
 
 // Add new element
 PG.addNewElement = function(){
+    // Get type, break if no type selected
     var type = $("#newElementType").val();
     if (type == 0) return false;
+    // Get ID, declare a random one if ID is empty
+    var id = $("#newElementId").val();
+    id = id === "" ? Math.random().toString(36).substring(2,8) : id;
+
+    // Check to see if ID is already in use
+    if (PG.tmp[id]) {
+        PG.modalMessage("Woah there capton!", "This element ID is already in use. Choose another one, please.");
+        return false;
+    }
+
+
     $("#newElementType").val(0);
-    var id = Math.random().toString(36).substring(2,8);
+    $("#newElementId").val('');
+    // var id = Math.random().toString(36).substring(2,8);
     // Start building element object
     PG.els[id] = {
         id: id,
@@ -1024,6 +1046,9 @@ PG.pointToArray = function(point){
     o = o.substring(0, o.length - 1);
     return o.split(",");
 }
-// PG.round(x, N){
-//     return (Math.round(x*Math.pow(10,N))/Math.pow(10, N)).toFixed(N);
-// }
+
+PG.modalMessage = function(head, message) {
+    $("#modal-head").html(head);
+    $("#modal-body").html(message);
+    $("body").addClass("modal-shown");
+}

@@ -1,7 +1,7 @@
 // Global Variables
 
 @primary-dark: #5d2693;
-@primary-light: lighten(@primary-dark, 20%);
+@primary-light: lighten(@primary-dark, 30%);
 @secondary-dark: blue;
 
 // Responsiveness
@@ -16,6 +16,8 @@
 
 body {
   font-size: 16px;
+  margin: 0;
+  padding: 0;
 }
 .container {
     padding-top: 30px;
@@ -27,7 +29,7 @@ body {
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
+	right: 0;
 	height: @topbar-height-desktop;
 	z-index: 100;
 
@@ -126,9 +128,10 @@ body {
 		}
 	}
 	#sidebar {
-		left: -@sidebar-width-mobile; // OFF OF SCREEN
+		left: -@sidebar-width-mobile - 20px; // OFF OF SCREEN, adjust for 10px padding
         width: @sidebar-width-mobile;
 		top: @topbar-height-mobile;
+        margin-left:0px;
 		opacity: 0.95;
 		z-index: 99;
 		transition: left @trans-time;
@@ -184,6 +187,18 @@ body {
     width: 100px;
 }
 
+#newElementTypeContainer {
+    text-align: center;
+}
+#newElementAddButton {
+    width: 100%;
+    background: #3b5998;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 // Panels
 .panel-large {
     border: 2px solid @primary-dark;
@@ -192,7 +207,7 @@ body {
         font-size: 28px;
         text-align: center;
         border-bottom: 2px solid @primary-dark;
-        background: @primary-light;
+        background: @primary-dark;
         color: white;
         cursor: pointer;
     }
@@ -267,45 +282,56 @@ ul#elementList {
 
 #addNew {
     border-bottom: 4px solid @primary-dark;
-    padding-bottom: 5px;
-    font-style: italic;
-    color: @primary-dark;
-    font-weight: bold;
-    font-size: 18px;
+    // padding-bottom: 5px;
+    // font-style: italic;
+    // color: @primary-dark;
+    // font-weight: bold;
+    // font-size: 18px;
 }
 
+// MODAL STYLES
+.modal {
+    position: fixed;
+    width: 450px;
+    height: 300px;
+    border: 3px solid black;
+    border-radius: 8px;
+    left: 50%;
+    top: -50%;
 
+    background: rgb(120,120,120);
+    z-index: 100;
+    transition: all @trans-time;
+    color: white;
+    .modal-head {
+        padding: 10px;
+        text-align: center;
+        font-size: 24px;
+        border-bottom: 3px solid black;
+        background: rgba(50,50,50,0.9);
+        font-weight: bold;
+        .fa-times {
+            float: left;
+            cursor: pointer;
+            color: red;
+            &:hover {
+                text-shadow: 1px 1px black;
+            }
+        }
+    }
+    .modal-body {
+        padding: 10px;
+        font-size: 16px;
+    }
+}
 
-// GRID SYSTEM
-* {
-    box-sizing: border-box;
-}
-.row::after {
-    content: "";
-    clear: both;
-    display: block;
-}
-[class*="col-"] {
-    float: left;
-    padding: 15px;
-}
-/* For desktop: */
-.col-1 {width: 8.33%;}
-.col-2 {width: 16.66%;}
-.col-3 {width: 25%;}
-.col-4 {width: 33.33%;}
-.col-5 {width: 41.66%;}
-.col-6 {width: 50%;}
-.col-7 {width: 58.33%;}
-.col-8 {width: 66.66%;}
-.col-9 {width: 75%;}
-.col-10 {width: 83.33%;}
-.col-11 {width: 91.66%;}
-.col-12 {width: 100%;}
-
-@media only screen and (max-width: 768px) {
-    /* For mobile phones: */
-    [class*="col-"] {
-        width: 100%;
+body.modal-shown {
+    .modal {
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    #content-overlay{
+        height: 100vh !important;
+        transition: height @trans-time;
     }
 }
