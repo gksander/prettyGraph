@@ -297,11 +297,13 @@ ul#elementList {
     border: 3px solid black;
     border-radius: 8px;
     left: 50%;
-    top: -50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
 
     background: rgb(120,120,120);
     z-index: 100;
-    transition: all @trans-time;
+    // transition: all @trans-time;
     color: white;
     .modal-head {
         padding: 10px;
@@ -327,8 +329,8 @@ ul#elementList {
 
 body.modal-shown {
     .modal {
-        top: 50%;
-        transform: translate(-50%, -50%);
+        visibility: visible;
+
     }
     #content-overlay{
         height: 100vh !important;
