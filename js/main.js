@@ -43,14 +43,15 @@ var PG = {
     tmp: {},
     // CHeck for stored variables, otherwise set some defaults
     vars: localStorage['PGvars'] ? JSON.parse(localStorage['PGvars']) : {
-        'boardWidth': 350,
-        'boardHeight': 350,
+        'boardWidth': 400,
+        'boardHeight': 400,
         'bounds': [-5, 5, -5, 5],
         'xLabel' : '$x$',
         'yLabel' : '$y$',
-        'ticksDistance' : [2, 2],
+        'ticksDistance' : [1, 1],
         'minorTicks' : [1, 1],
-        'globalFontSize': 20
+        'globalFontSize': 20,
+        'showAxes' : 1
     },
     board: "",
     els: localStorage['PGels'] ? JSON.parse(localStorage['PGels']) : {}
@@ -70,10 +71,15 @@ PG.fillInputs = function(){
     // Ticks Distance
     $("#graphXTicksDistance").val(PG.vars.ticksDistance[0]);
     $("#graphYTicksDistance").val(PG.vars.ticksDistance[1]);
+    // MinorTicks
+    $("#graphXMinorTicks").val(PG.vars.minorTicks[0]);
+    $("#graphYMinorTicks").val(PG.vars.minorTicks[1]);
     // Axis Labels
     $("#graphxLabel").val(PG.vars.xLabel);
     $("#graphyLabel").val(PG.vars.yLabel);
     $("#verticalyLabel").attr('checked', PG.vars.yLabelVertical);
+    // Hide/Show Graph
+    $("#graphShowAxes").val(PG.vars.showAxes);
     // Global FontSize
     $("#graphFontSize").val(PG.vars.globalFontSize);
 }
@@ -85,9 +91,11 @@ PG.registerListeners = function(){
     $(".graphSize").on('change', PG.changeGraphSize);
     $(".graphBounds").on('change', PG.changeGraphBounds);
     $(".ticksDistance").on('change', PG.changeTicksDistance);
+    $(".graphMinorTicks").on('change', PG.changeMinorTicks);
     $(".axisLabel").on("change", PG.changeAxesLabels);
     $("#verticalyLabel").on("change", PG.changeyLabelOrient);
     $("#graphFontSize").on("change", PG.changeGlobalFontSize);
+    $("#graphShowAxes").on("input", PG.changeShowAxes);
 
     // Add new element
     // $("#addElement").on('click', PG.addNewElement);
@@ -153,6 +161,17 @@ PG.changeTicksDistance = function(){
     }
 }
 
+// Change MinorTicks
+PG.changeMinorTicks = function(){
+    var xMinorTicks = parseFloat($("#graphXMinorTicks").val()),
+        yMinorTicks = parseFloat($("#graphYMinorTicks").val());
+    PG.vars.minorTicks = [xMinorTicks, yMinorTicks];
+    try {
+        PG.tmp.xAxisTicks.setAttribute({minorTicks: xMinorTicks});
+        PG.tmp.yAxisTicks.setAttribute({minorTicks: yMinorTicks});
+    } catch(err){}
+}
+
 // Change Axes Labels
 PG.changeAxesLabels = function(){
     var xLabel = $("#graphxLabel").val(),
@@ -173,6 +192,14 @@ PG.changeyLabelOrient = function(){
     PG.vars.yLabelVertical = $("#verticalyLabel").is(":checked");
     PG.saveVars();
     location.reload();
+}
+
+// Toggle Axes
+PG.changeShowAxes = function(){
+    var show = parseInt($(this).val());
+    PG.vars.showAxes = show;
+    PG.tmp.xaxis.setAttribute({visible: show==1 ? true : false});
+    PG.tmp.yaxis.setAttribute({visible: show==1 ? true : false});
 }
 
 // Change Global FontSize
@@ -239,6 +266,8 @@ PG.addNewElement = function(){
             PG.els[id].strokeWidth = 3;
             PG.els[id].strokeColor = "black";
             PG.els[id].dash = 0;
+            // PG.els[id].fillColor = 'white';
+            // PG.els[id].fillOpacity = 0;
             break;
         case "point":
             // PG.els[id].x = 1;
@@ -414,7 +443,9 @@ PG.buildBoardElement = function(ops){
                 highlight: false,
                 strokeWidth: ops.strokeWidth ? ops.strokeWidth : 3,
                 strokeColor: ops.strokeColor ? ops.strokeColor : 'black',
-                dash: ops.dash ? ops.dash : 0
+                dash: ops.dash ? ops.dash : 0,
+                // fillColor: ops.fillColor ? ops.fillColor : 'white',
+                // fillOpacity: ops.fillOpacity ? ops.fillOpacity : 0
             };
             PG.tmp[id] = PG.board.create('functiongraph', [
                 (x) => {
@@ -955,7 +986,7 @@ PG.initBoard = function(){
 
 // Configuration Options for JSXGraph
 JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 7, circle: 6,
-          curve: 5, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 3, ticks: 2, grid: 1, image: 0, trace: 0};
+          curve: 5, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
 JXG.Options.text.fontSize = PG.vars.globalFontSize;
 
 // Auxillary
