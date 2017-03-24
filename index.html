@@ -54,45 +54,63 @@
 
     <div class="row">
         <div class="col-5">
-            <h1>Graphing Window</h1>
-            <ul>
-                <li>
-                    Graph Width/Height (in pixels):
-                    <input type="text" id="graphWidth" class="graphSize smallInput"> /
-                    <input type="text" id="graphHeight" class="graphSize smallInput">
-                </li>
-                <li>
-                    Graph Bounds: <br/>
-                    x from <input type="text" id="graphxMin" class="graphBounds smallInput"> to <input type="text" id="graphxMax" class="graphBounds smallInput">, <br>
-                    y from <input type="text" id="graphyMin" class="graphBounds smallInput"> to <input type="text" id="graphyMax" class="graphBounds smallInput">
-                </li>
-                <li>
-                    Distance Between Ticks (X/Y): <input type="text" id="graphXTicksDistance" class="ticksDistance smallInput"> / <input type="text" id="graphYTicksDistance" class="ticksDistance smallInput">
-                </li>
-                <li>
-                    Axis Labels: <br>
-                    x-axis: <input type="text" id="graphxLabel" class="axisLabel smallInput"> <br>
-                    y-axis: <input type="text" id="graphyLabel" class="axisLabel smallInput"> Vertical? <input type="checkbox" id="verticalyLabel">
-                </li>
-                <li>
-                    Global Font Size: <input type="text" id="graphFontSize" class="smallInput">
-                </li>
-            </ul>
 
-            <hr>
+            <div class="panel-large">
+                <div class="panel-large-head">
+                    Graphing Window
+                </div>
+                <div class="panel-large-body">
+                    <ul id='windowList'>
+                        <li>
+                            <h4>Graph Width/Height (in pixels)</h4>
+                            <input type="text" id="graphWidth" class="graphSize" size='8'> px /
+                            <input type="text" id="graphHeight" class="graphSize" size='8'> px
+                        </li>
+                        <li>
+                            <h4>Graph Bounds</h4>
+                            x from <input type="text" id="graphxMin" class="graphBounds" size='8'> to <input type="text" id="graphxMax" class="graphBounds" size='8'> <br/>
+                            y from <input type="text" id="graphyMin" class="graphBounds" size='8'> to <input type="text" id="graphyMax" class="graphBounds" size='8'>
+                        </li>
+                        <li>
+                            <h4>Distance Between Ticks (X/Y)</h4>
+                            <input type="text" id="graphXTicksDistance" class="ticksDistance" size='8'> / <input type="text" id="graphYTicksDistance" class="ticksDistance" size='8'>
+                        </li>
+                        <li>
+                            <h4>Axis Labels</h4>
+                            x-axis: <input type="text" id="graphxLabel" class="axisLabel" size='8'> <br>
+                            y-axis: <input type="text" id="graphyLabel" class="axisLabel" size='8'> Vertical? <input type="checkbox" id="verticalyLabel">
+                        </li>
+                        <li>
+                            <h4>Global Font Size</h4>
+                            <input type="text" id="graphFontSize" size='8'> px
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
-            <h1>Add Elements</h1>
-            <p>
-                <button type='button' id='addElement'>Add the Following:</button>
-                <select name="newElementType" id="newElementType">
-                    <option value='functiongraph'>Function Graph</option>
-                    <option value='point'>Point</option>
-                    <option value="line">Line</option>
-                </select>
-            </p>
-            <ul id='elementList'>
+            <br>
 
-            </ul>
+            <div class="panel-large">
+                <div class="panel-large-head">
+                    Add Elements
+                </div>
+                <div class="panel-large-body">
+                    <p id='addNew'>
+                        Select an Element to Add: 
+                        <select name="newElementType" id="newElementType">
+                            <option value="0">Choose one...</option>
+                            <option value='functiongraph'>Function Graph</option>
+                            <option value="text">Text</option>
+                            <option value='point'>Point</option>
+                            <option value="line">Line</option>
+                            <option value="circle">Circle</option>
+                        </select>
+                    </p>
+                    <ul id='elementList'>
+
+                    </ul>
+                </div>
+            </div>
 
 
 

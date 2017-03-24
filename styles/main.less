@@ -1,3 +1,11 @@
+// Global Variables
+
+@primary-dark: #5d2693;
+@primary-light: lighten(@primary-dark, 20%);
+
+@secondary-dark: blue;
+
+
 body {
   font-size: 16px;
 }
@@ -5,6 +13,92 @@ body {
 .deleteItem {
     cursor: pointer;
     color: red;
+}
+
+// Panels
+.panel-large {
+    border: 2px solid @primary-dark;
+    border-radius: 5px;
+    .panel-large-head {
+        font-size: 28px;
+        text-align: center;
+        border-bottom: 2px solid @primary-dark;
+        background: @primary-light;
+        color: white;
+        cursor: pointer;
+    }
+    .panel-large-body {
+        display: block; // CHANGE TO NONE
+        padding: 5px 15px;
+    }
+}
+
+.panel-small {
+    border: 2px solid @secondary-dark;
+    border-radius: 4px;
+    .panel-small-head {
+        border-bottom: 2px solid @secondary-dark;
+        padding: 5px;
+        // cursor: pointer;
+    }
+    .panel-small-body {
+        padding: 5px 15px;
+        ul {
+            list-style-type: none;
+            padding-left: 0px;
+        }
+    }
+}
+
+
+// List Styles
+ul#windowList {
+    list-style-type: none;
+    padding-left: 0px;
+
+    > li > h4 {
+        margin-bottom: 5px;
+        margin-top: 8px;
+        margin-left: -5px;
+        color: @primary-dark;
+        font-weight: bold;
+        border-bottom: 1px solid @primary-dark;
+    }
+}
+
+ul#elementList {
+    list-style-type: none;
+    padding-left: 0px;
+    li {
+        >p {
+            border-bottom: 2px solid @primary-dark;
+            font-weight: bold;
+            color: @primary-dark;
+        }
+        ul {
+            // padding-left: 10px;
+            li {
+                padding-bottom: 3px;
+            }
+        }
+    }
+    .deleteItem {
+        font-size: 20px;
+        &:hover {
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+        transition: all 0.3s;
+    }
+}
+
+#addNew {
+    border-bottom: 4px solid @primary-dark;
+    padding-bottom: 5px;
+    font-style: italic;
+    color: @primary-dark;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 
