@@ -106,14 +106,25 @@ PG.registerListeners = function(){
     $("#graphShowAxes").on("input", PG.changeShowAxes);
 
     // Add new element
-    // $("#addElement").on('click', PG.addNewElement);
-    // $("#newElementType").on('change', PG.addNewElement);
     $("#newElementAddButton").on("click", PG.addNewElement);
 
     // Remove element when X is clicked next to item details
     $(document).on('click', ".deleteItem", function(){
         var id = $(this).closest('li.elementItem').attr('id');
         PG.removeElement(id);
+    });
+
+    // Reset board
+    $("#graphResetBoard").on("click", function(){
+        var conf = confirm("Are you sure you want to reset all of the board settings and remove all elements?");
+        if (conf){
+            PG.dropVars();
+            location.reload();
+        }
+    });
+    // Save Board
+    $("#graphSaveBoard").on("click", function(){
+        PG.saveVars();
     });
 }
 
