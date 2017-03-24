@@ -27,9 +27,13 @@ $(function(){ // On document ready
     $(".panel-large-head").on('click', function(){
         $(this).closest('.panel-large').find('.panel-large-body').slideToggle();
     });
-    // $("#elementList").on('click', ".elementItemTitle", function(){
-    //     $(this).parent().find('ul').slideToggle();
-    // });
+
+    $("#elementList").on('click', '.elId', function(){
+        $("#hide").val($(this).text());
+        var dd = document.querySelector("#hide");
+        dd.select();
+        var succ = document.execCommand('copy');
+    })
 
 });
 
@@ -236,17 +240,16 @@ PG.addNewElement = function(){
             PG.els[id].dash = 0;
             break;
         case "point":
-            PG.els[id].x = 1;
-            PG.els[id].y = 2;
+            // PG.els[id].x = 1;
+            // PG.els[id].y = 2;
+            PG.els[id].loc = "(1, 2)";
             PG.els[id].size = 3;
             PG.els[id].name = '';
             PG.els[id].color = 'black';
             break;
         case "line":
-            PG.els[id].startX = 0;
-            PG.els[id].startY = 0;
-            PG.els[id].endX = 2;
-            PG.els[id].endY = 2;
+            PG.els[id].startLoc = "(0,0)";
+            PG.els[id].endLoc = "(2*cos(1), 2*sin(1))";
             PG.els[id].strokeWidth = 3;
             PG.els[id].strokeColor = "blue";
             PG.els[id].dash = 0;
@@ -254,8 +257,7 @@ PG.addNewElement = function(){
             PG.els[id].ends = 0;
             break;
         case "text":
-            PG.els[id].x = 1;
-            PG.els[id].y = 1;
+            PG.els[id].loc = '(1, 1)';
             PG.els[id].text = "`Delta x`";
             PG.els[id].fontSize = PG.vars.globalFontSize;
             PG.els[id].anchorX = 0;
@@ -263,8 +265,7 @@ PG.addNewElement = function(){
             PG.els[id].color = 'blue';
             break;
         case "circle":
-            PG.els[id].x = 1;
-            PG.els[id].y = 1;
+            PG.els[id].loc = "(1,1)";
             PG.els[id].r = 2;
             PG.els[id].strokeWidth = 3;
             PG.els[id].strokeColor = 'black';
@@ -294,7 +295,7 @@ PG.buildElementHtml = function(ops){
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Function Graph</p>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Function Graph: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
@@ -310,10 +311,9 @@ PG.buildElementHtml = function(ops){
         case "point":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Point</p>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Point: <span class='elId'>${ops.id}</span></p>
                     <ul>
-                        <li>Location: (<input type='text' class='element_pointX' size=8 value='${ops.x}'>,
-                        <input type='text' class='element_pointY' size=8 value='${ops.y}'>)</li>
+                        <li>Location: <input type='text' class='element_pointLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('size', {size: ops.size})}</li>
                         <li>${PG.buildAestheticComponent('name', {name: ops.name})}</li>
                         <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
@@ -325,16 +325,10 @@ PG.buildElementHtml = function(ops){
         case "line":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Line (Segment)</p>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Line (Segment): <span class='elId'>${ops.id}</span></p>
                     <ul>
-                        <li>Start at: (
-                            <input type='text' class='element_segmentStartX element_segmentCoords' size=8 value='${ops.startX}'>,
-                            <input type='text' class='element_segmentStartY element_segmentCoords' size=8 value='${ops.startY}'>
-                        )</li>
-                        <li>End at: (
-                            <input type='text' class='element_segmentEndX element_segmentCoords' size=8 value='${ops.endX}'>,
-                            <input type='text' class='element_segmentEndY element_segmentCoords' size=8 value='${ops.endY}'>
-                        )</li>
+                        <li>Start Location: <input type='text' class='element_segmentStartLoc' size=12 value='${ops.startLoc}'></li>
+                        <li>Ending Location: <input type='text' class='element_segmentEndLoc' size=12 value='${ops.endLoc}'></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
                         <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
                         <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
@@ -348,13 +342,10 @@ PG.buildElementHtml = function(ops){
         case "text":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Text</p>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Text: <span class='elId'>${ops.id}</span></p>
                     <ul>
                         <li>Text: <input type='text' class='element_text' size=15 value='${ops.text}'/></li>
-                        <li>Location: (
-                            <input type='text' class='element_textX' size=8 value='${ops.x}'>,
-                            <input type='text' class='element_textY' size=8 value='${ops.y}'>
-                        )</li>
+                        <li>Location: <input type='text' class='element_textLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('fontSize', {fontSize: ops.fontSize})}</li>
                         <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
                     </ul>
@@ -365,12 +356,9 @@ PG.buildElementHtml = function(ops){
         case "circle":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Circle</p>
+                    <p class='elementItemTitle'><span class='deleteItem'>&times;</span> Circle: <span class='elId'>${ops.id}</span></p>
                     <ul>
-                        <li>Center: (
-                            <input type='text' class='element_circleX' size=8 value='${ops.x}'>,
-                            <input type='text' class='element_circleY' size=8 value='${ops.y}'>
-                        )</li>
+                        <li>Center: <input type='text' class='element_circleLoc' size=8 value='${ops.loc}'></li>
                         <li>Radius: <input type='text' class='element_circleR' size='8' value='${ops.r}'/></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
                         <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
@@ -412,24 +400,25 @@ PG.buildBoardElement = function(ops){
             break;
 
         case "point":
-            PG.tmp[ops.id] = PG.board.create('point', [
-                math.eval(PG.els[id].x),
-                math.eval(PG.els[id].y)
-            ], {
+            var ats = {
                 fixed: true,
                 name: ops.name ? ops.name : '',
                 highlight: false,
                 color: ops.color ? ops.color : 'black',
                 showInfobox: false,
                 size: ops.size ? ops.size : 3
-            });
+            };
+
+            var loc = PG.pointToArray(PG.els[id].loc);
+
+            PG.tmp[ops.id] = PG.board.create('point', [
+                math.eval(loc[0]),
+                math.eval(loc[1])
+            ], ats);
             break;
 
         case "line":
-            PG.tmp[id] = PG.board.create('line', [
-                [math.eval(ops.startX), math.eval(ops.startY)],
-                [math.eval(ops.endX), math.eval(ops.endY)]
-            ], {
+            var ats = {
                 fixed: true,
                 highlight: false,
                 strokeWidth: ops.strokeWidth ? ops.strokeWidth : 3,
@@ -439,26 +428,53 @@ PG.buildBoardElement = function(ops){
                 straightLast: (ops.end == 1 || ops.end == 3),
                 firstArrow: (ops.arrow == 2 || ops.arrow == 3),
                 lastArrow: (ops.arrow == 1 || ops.arrow == 3)
-            })
+            };
+
+
+            if (ops.startLoc.indexOf("(") > -1){
+                var s = PG.pointToArray(ops.startLoc);
+                var start = [math.eval(s[0]), math.eval(s[1])];
+            } else {
+                var start = PG.tmp[ops.startLoc];
+            }
+            if (ops.endLoc.indexOf("(") > -1){
+                var e = PG.pointToArray(ops.endLoc);
+                var end = [math.eval(e[0]), math.eval(e[1])];
+            } else {
+                var end = PG.tmp[ops.endLoc];
+            }
+            //
+            PG.tmp[id] = PG.board.create('line', [start, end], ats)
             break;
 
         case "text":
-            PG.tmp[id] = PG.board.create('text', [
-                math.eval(ops.x),
-                math.eval(ops.y),
-                () => {return ops.text;}
-            ], {
+            var ats = {
                 highlight: false,
                 anchorX: ops.anchorX == -1 ? 'right' : (ops.anchorX == 0 ? 'middle' : 'left'),
                 anchorY: ops.anchorY == -1 ? 'top' : (ops.anchorY == 0 ? 'middle' : 'bottom'),
                 fontSize: ops.fontSize,
                 color: ops.color,
                 useMathJax: true
-            });
+            };
+
+            if (ops.loc.indexOf("(") > -1){
+                var loc = PG.pointToArray(ops.loc);
+                PG.tmp[id] = PG.board.create('text', [
+                    math.eval(loc[0]),
+                    math.eval(loc[1]),
+                    () => {return ops.text;}
+                ], ats);
+            } else {
+                PG.tmp[id] = PG.board.create('text', [
+                    ()=>{return PG.tmp[ops.loc].X()},
+                    ()=>{return PG.tmp[ops.loc].Y()},
+                    () => {return ops.text;}
+                ], ats);
+            }
             break;
 
         case "circle":
-            PG.tmp[id] = PG.board.create('circle', [[math.eval(ops.x), math.eval(ops.y)], math.eval(ops.r)], {
+            var ats = {
                 fixed: true,
                 highlight: false,
                 strokeWidth: ops.strokeWidth,
@@ -466,7 +482,17 @@ PG.buildBoardElement = function(ops){
                 fillColor: ops.fillColor,
                 fillOpacity: ops.fillOpacity,
                 dash: ops.dash
-            });
+            };
+
+            if (ops.loc.indexOf("(") > -1){
+                var s = PG.pointToArray(ops.loc);
+                var start = [math.eval(s[0]), math.eval(s[1])];
+            } else {
+                var start = PG.tmp[ops.loc]
+            }
+
+
+            PG.tmp[id] = PG.board.create('circle', [start, math.eval(ops.r)], ats);
             break;
     }
 }
@@ -554,40 +580,26 @@ PG.buildAestheticComponent = function(type, ops){
 $(function(){
 
     // WHEN POINT COORDINATES ARE CHANGEd
-    $("#elementList").on('change', '.element_pointX, .element_pointY', function(){
+    $("#elementList").on('change', '.element_pointLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');
-        var x = $(`li#${id}`).find('.element_pointX').val(),
-            y = $(`li#${id}`).find('.element_pointY').val();
+        PG.els[id].loc = $(this).val();
+        var locA = PG.pointToArray($(this).val());
 
-        PG.els[id].x = x;
-        PG.els[id].y = y;
-        // Try to parse these
-        try {
-            x = math.eval(x),
-            y = math.eval(y);
-        }
-        catch (err){
-            x = 0, y = 0;
-        }
-        // Change coords and update board
-        PG.tmp[id].setPosition(JXG.COORDS_BY_USER, [x, y]);
+        PG.tmp[id].setPosition(JXG.COORDS_BY_USER, [math.eval(locA[0]), math.eval(locA[1])]);
         PG.board.update();
     });
 
     // When Segment Coordinates are changed
-    $("#elementList").on('change', '.element_segmentCoords', function(){
+    $("#elementList").on('change', '.element_segmentStartLoc, .element_segmentEndLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');
         var li = $(`li#${id}`);
-        var startX = li.find('.element_segmentStartX').val(),
-            startY = li.find('.element_segmentStartY').val(),
-            endX = li.find('.element_segmentEndX').val(),
-            endY = li.find('.element_segmentEndY').val();
+        var startLoc = li.find('.element_segmentStartLoc').val(),
+            endLoc = li.find('.element_segmentEndLoc').val();
 
-        PG.els[id].startX = startX;
-        PG.els[id].startY = startY;
-        PG.els[id].endX = endX;
-        PG.els[id].endY = endY;
+        PG.els[id].startLoc = startLoc;
+        PG.els[id].endLoc = endLoc;
 
+        // TODO: change this from rebuild to setPosition.
         // PG.tmp[id].setPosition(JXG.COORDS_BY_USER, [math.eval(startX), math.eval(startY)]);
         PG.board.removeObject(PG.tmp[id]);
         PG.buildBoardElement(PG.els[id]);
@@ -620,13 +632,9 @@ $(function(){
     });
 
     // When Text position is changed
-    $("#elementList").on("change", '.element_textX, .element_textY', function(){
+    $("#elementList").on("change", '.element_textLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');
-        var x = $(`li#${id}`).find('.element_textX').val(),
-            y = $(`li#${id}`).find('.element_textY').val();
-
-        PG.els[id].x = x;
-        PG.els[id].y = y;
+        PG.els[id].loc = $(this).val();
 
         PG.board.removeObject(PG.tmp[id]);
         PG.buildBoardElement(PG.els[id]);
@@ -643,14 +651,10 @@ $(function(){
         PG.board.update();
     });
 
-
     // When Circle position is changed
-    $("#elementList").on("change", '.element_circleX, .element_circleY', function(){
+    $("#elementList").on("change", '.element_circleLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');
-        var x = $(`li#${id}`).find('.element_circleX').val(),
-            y = $(`li#${id}`).find('.element_circleY').val();
-        PG.els[id].x = x;
-        PG.els[id].y = y;
+        PG.els[id].loc = $(this).val();
 
         PG.board.removeObject(PG.tmp[id]);
         PG.buildBoardElement(PG.els[id]);
@@ -874,3 +878,11 @@ PG.initBoard = function(){
 JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 7, circle: 6,
           curve: 5, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 3, ticks: 2, grid: 1, image: 0, trace: 0};
 JXG.Options.text.fontSize = PG.vars.globalFontSize;
+
+// Auxillary
+PG.pointToArray = function(point){
+    var o = point.trim();
+    o = o.substr(1);
+    o = o.substring(0, o.length - 1);
+    return o.split(",");
+}

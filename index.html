@@ -96,7 +96,7 @@
                 </div>
                 <div class="panel-large-body">
                     <p id='addNew'>
-                        Select an Element to Add: 
+                        Select an Element to Add:
                         <select name="newElementType" id="newElementType">
                             <option value="0">Choose one...</option>
                             <option value='functiongraph'>Function Graph</option>
@@ -104,6 +104,7 @@
                             <option value='point'>Point</option>
                             <option value="line">Line</option>
                             <option value="circle">Circle</option>
+                            <option value="inequality">Inequality</option>
                         </select>
                     </p>
                     <ul id='elementList'>
@@ -123,6 +124,10 @@
 
         </div>
 
+    </div>
+
+    <div style='visibility: hidden'>
+        <textarea name="hide" id="hide" cols="30" rows="10"></textarea>
     </div>
 
 </body>
