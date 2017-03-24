@@ -427,7 +427,7 @@ PG.buildElementHtml = function(ops){
             break;
 
     }
-    $("ul#elementList").append(os);
+    $("ul#elementList").prepend(os);
 
 }
 
@@ -459,26 +459,32 @@ PG.buildBoardElement = function(ops){
             break;
 
         case "point":
-            var ats = {
-                fixed: true,
-                name: ops.name ? ops.name : '',
-                highlight: false,
-                color: ops.color ? ops.color : 'black',
-                showInfobox: false,
-                size: ops.size ? ops.size : 3
-            };
-
             var loc = PG.pointToArray(PG.els[id].loc);
 
             PG.tmp[ops.id] = PG.board.create('point', [
                 math.eval(loc[0]),
                 math.eval(loc[1])
-            ], ats);
+            ], {
+                fixed: false,
+                name: ops.name ? ops.name : '',
+                highlight: false,
+                color: ops.color ? ops.color : 'black',
+                showInfobox: false,
+                size: ops.size ? ops.size : 3
+            });
+            // Rig event listener to point
+            PG.tmp[id].on('drag', function(){
+                var x = this.X(),
+                    y = this.Y();
+                var loc = `(${x}, ${y})`;
+                $(`li#${id}`).find(".element_pointLoc").val(loc);
+                PG.els[id].loc = loc;
+            })
             break;
 
         case "line":
             var ats = {
-                fixed: true,
+                fixed: false,
                 highlight: false,
                 strokeWidth: ops.strokeWidth ? ops.strokeWidth : 3,
                 strokeColor: ops.strokeColor ? ops.strokeColor : 'black',
@@ -503,7 +509,21 @@ PG.buildBoardElement = function(ops){
                 var end = PG.tmp[ops.endLoc];
             }
             //
-            PG.tmp[id] = PG.board.create('line', [start, end], ats)
+            PG.tmp[id] = PG.board.create('line', [start, end], ats);
+            // Rig up event listener
+            PG.tmp[id].on('drag', function(){
+                var startX = PG.board.objects[this.parents[0]].X(),
+                    startY = PG.board.objects[this.parents[0]].Y(),
+                    endX = PG.board.objects[this.parents[1]].X(),
+                    endY = PG.board.objects[this.parents[1]].Y();
+                var startLoc = `(${startX.toFixed(2)}, ${startY.toFixed(2)})`,
+                    endLoc = `(${endX.toFixed(2)}, ${endY.toFixed(2)})`;
+
+                PG.els[id].startLoc = startLoc;
+                PG.els[id].endLoc = endLoc;
+                $(`li#${id}`).find(".element_segmentStartLoc").val(startLoc);
+                $(`li#${id}`).find(".element_segmentEndLoc").val(endLoc);
+            });
             break;
 
         case "text":
@@ -530,6 +550,14 @@ PG.buildBoardElement = function(ops){
                     () => {return ops.text;}
                 ], ats);
             }
+            // Rig up event listener
+            PG.tmp[id].on('drag', function(){
+                var x = this.X(),
+                    y = this.Y();
+                var loc = `(${x}, ${y})`;
+                $(`li#${id}`).find(".element_textLoc").val(loc);
+                PG.els[id].loc = loc;
+            });
             break;
 
         case "circle":
@@ -996,3 +1024,6 @@ PG.pointToArray = function(point){
     o = o.substring(0, o.length - 1);
     return o.split(",");
 }
+// PG.round(x, N){
+//     return (Math.round(x*Math.pow(10,N))/Math.pow(10, N)).toFixed(N);
+// }
