@@ -259,14 +259,17 @@ PG.pullStoredElements = function(){
 PG.addNewElement = function(){
     // Get type, break if no type selected
     var type = $("#newElementType").val();
-    if (type == 0) return false;
+    if (type == 0) {
+        PG.modalMessage("Whoops!", "It looks like you forgot to choose an element type.");
+        return false;
+    }
     // Get ID, declare a random one if ID is empty
     var id = $("#newElementId").val();
     id = id === "" ? Math.random().toString(36).substring(2,8) : id;
 
     // Check to see if ID is already in use
     if (PG.tmp[id]) {
-        PG.modalMessage("Woah there capton!", "This element ID is already in use. Choose another one, please.");
+        PG.modalMessage("Woah there, Captain!", "This element ID is already in use. Choose another one, please.");
         return false;
     }
 
