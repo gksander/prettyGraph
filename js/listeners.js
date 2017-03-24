@@ -73,6 +73,22 @@ $(function(){
         }
     });
 
+    // When bounding box is changed via drag
+    PG.board.on('boundingbox', function(){
+        var bounds = PG.board.getBoundingBox();
+        var xmin = bounds[0],
+            xmax = bounds[2],
+            ymin = bounds[3],
+            ymax = bounds[1];
+
+        PG.vars.bounds = [xmin, xmax, ymin, ymax];
+        $("#graphxMin").val(xmin);
+        $("#graphxMax").val(xmax);
+        $("#graphyMin").val(ymin);
+        $("#graphyMax").val(ymax);
+
+    });
+
     // Change TicksDistance
     $(".ticksDistance").on('change', function(){
         var xTicksDistance = parseFloat($("#graphXTicksDistance").val()),

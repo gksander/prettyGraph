@@ -93,7 +93,7 @@ PG.initBoard = function(){
         boundingBox: [PG.vars.bounds[0], PG.vars.bounds[3], PG.vars.bounds[1], PG.vars.bounds[2]],
         axis: false,
         showCopyright: false,
-        pan: {enabled: true, needshift: true},
+        pan: {enabled: true, needshift: false},
         zoom: {
             factorX: 1.25,
             factorY: 1.25,
