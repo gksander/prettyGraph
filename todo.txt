@@ -1,0 +1,5 @@
+- Text Anchoring
+- Segment relocating: use a setPosition instead of re-drawing
+
+- SPLIT UP JS FILES
+- SAVE DIFFERENT FILES IN LOCALSTORAGE
