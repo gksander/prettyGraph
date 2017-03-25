@@ -183,6 +183,13 @@ $(function(){
         PG.saveVars();
     });
 
+    // Open/Close Attribute Folder
+    $("#elementList").on("click", ".attribute-folder", function(){
+        // var id = $(this).closest("li.elementItem").attr('id');
+        $(this).toggleClass("fa-folder fa-folder-open");
+        $(this).closest("li.elementItem").find("ul").slideToggle();
+    });
+
 
 
 

@@ -277,7 +277,7 @@ PG.buildElementHtml = function(ops){
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Function Graph: <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Function Graph', ops.id)}
                     <ul>
                         <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
@@ -294,7 +294,7 @@ PG.buildElementHtml = function(ops){
         case "point":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Point: <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Point', ops.id)}
                     <ul>
                         <li>Location: <input type='text' class='element_pointLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('size', {size: ops.size})}</li>
@@ -309,7 +309,7 @@ PG.buildElementHtml = function(ops){
         case "line":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Line (Segment): <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Line (Segment)', ops.id)}
                     <ul>
                         <li>Start Location: <input type='text' class='element_segmentStartLoc' size=12 value='${ops.startLoc}'></li>
                         <li>Ending Location: <input type='text' class='element_segmentEndLoc' size=12 value='${ops.endLoc}'></li>
@@ -327,7 +327,7 @@ PG.buildElementHtml = function(ops){
         case "text":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Text: <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Text', ops.id)}
                     <ul>
                         <li>Text: <input type='text' class='element_text' size=15 value='${ops.text}'/></li>
                         <li>Location: <input type='text' class='element_textLoc' size='12' value='${ops.loc}'/></li>
@@ -342,7 +342,7 @@ PG.buildElementHtml = function(ops){
         case "circle":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Circle: <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Circle', ops.id)}
                     <ul>
                         <li>Center: <input type='text' class='element_circleLoc' size=8 value='${ops.loc}'></li>
                         <li>Radius: <input type='text' class='element_circleR' size='8' value='${ops.r}'/></li>
@@ -359,7 +359,7 @@ PG.buildElementHtml = function(ops){
         case "inequality":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    <p class='elementItemTitle'><i class="fa fa-times deleteItem" aria-hidden="true"></i> Inequality: <span class='elId'>${ops.id}</span></p>
+                    ${PG.generateElementTitle('Inequality', ops.id)}
                     <ul>
                         <li>Line: <input type='text' class='element_ineqLine' size=8 value='${ops.line}'></li>
                         <li>Inverse: <input class='element_ineqInvert' type='checkbox' ${ops.inverse ? 'checked' : ''} /></li>
@@ -374,6 +374,16 @@ PG.buildElementHtml = function(ops){
     }
     $("ul#elementList").prepend(os);
     jscolor.installByClassName("jscolor");
+}
+
+PG.generateElementTitle = function(type, id){
+    return `
+    <p>
+        <i class="fa fa-times deleteItem" aria-hidden="true"></i>
+        ${type}: <span class='elId'>${id}</span>
+        <i class="fa fa-folder-open attribute-folder" aria-hidden="true"></i>
+    </p>
+    `;
 }
 
 
