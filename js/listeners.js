@@ -328,7 +328,7 @@ $(function(){
         var id = $(this).closest('li.elementItem').attr('id');
         var color = $(this).val();
         PG.els[id].color = color;
-        PG.tmp[id].setAttribute({color: color});
+        PG.tmp[id].setAttribute({color: `#${color}`});
     });
 
     // WHEN STROKE COLOR INPUT IS CHANGEd
@@ -336,7 +336,7 @@ $(function(){
         var id = $(this).closest('li.elementItem').attr('id');
         var color = $(this).val();
         PG.els[id].strokeColor = color;
-        PG.tmp[id].setAttribute({strokeColor: color});
+        PG.tmp[id].setAttribute({strokeColor: `#${color}`});
     });
 
     // WHEN FILL COLOR INPUT IS CHANGEd
@@ -344,7 +344,7 @@ $(function(){
         var id = $(this).closest('li.elementItem').attr('id');
         var color = $(this).val();
         PG.els[id].fillColor = color;
-        PG.tmp[id].setAttribute({fillColor: color});
+        PG.tmp[id].setAttribute({fillColor: `#${color}`});
     });
 
     // WHEN FILL OPACITY INPUT IS CHANGEd

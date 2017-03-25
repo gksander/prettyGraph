@@ -216,7 +216,7 @@ PG.addNewElement = function(){
             PG.els[id].lowerBound = "";
             PG.els[id].upperBound = "";
             PG.els[id].strokeWidth = 3;
-            PG.els[id].strokeColor = "black";
+            PG.els[id].strokeColor = "000000";
             PG.els[id].dash = 0;
             // PG.els[id].fillColor = 'white';
             // PG.els[id].fillOpacity = 0;
@@ -227,13 +227,13 @@ PG.addNewElement = function(){
             PG.els[id].loc = "(1, 2)";
             PG.els[id].size = 3;
             PG.els[id].name = '';
-            PG.els[id].color = 'black';
+            PG.els[id].color = '000000';
             break;
         case "line":
             PG.els[id].startLoc = "(0,0)";
             PG.els[id].endLoc = "(2*cos(1), 2*sin(1))";
             PG.els[id].strokeWidth = 3;
-            PG.els[id].strokeColor = "blue";
+            PG.els[id].strokeColor = "000000";
             PG.els[id].dash = 0;
             PG.els[id].arrow = 0;
             PG.els[id].ends = 0;
@@ -245,21 +245,21 @@ PG.addNewElement = function(){
             PG.els[id].fontSize = PG.vars.globalFontSize;
             PG.els[id].anchorX = 0;
             PG.els[id].anchorY = 0;
-            PG.els[id].color = 'blue';
+            PG.els[id].color = '161DFF';
             break;
         case "circle":
             PG.els[id].loc = "(1,1)";
             PG.els[id].r = 2;
             PG.els[id].strokeWidth = 3;
-            PG.els[id].strokeColor = 'black';
-            PG.els[id].fillColor = 'white';
+            PG.els[id].strokeColor = '000000';
+            PG.els[id].fillColor = 'FFFFFF';
             PG.els[id].fillOpacity = 0;
             PG.els[id].dash = 0;
             break;
         case "inequality":
             PG.els[id].line = "";
             PG.els[id].inverse = false;
-            PG.els[id].fillColor = "red";
+            PG.els[id].fillColor = "FF0000";
             PG.els[id].fillOpacity = 0.3;
             break;
     }
@@ -373,6 +373,7 @@ PG.buildElementHtml = function(ops){
 
     }
     $("ul#elementList").prepend(os);
+    jscolor.installByClassName("jscolor");
 }
 
 
@@ -388,7 +389,7 @@ PG.buildBoardElement = function(ops){
                 fixed: true,
                 highlight: false,
                 strokeWidth: ops.strokeWidth ? ops.strokeWidth : 3,
-                strokeColor: ops.strokeColor ? ops.strokeColor : 'black',
+                strokeColor: ops.strokeColor ? "#"+ops.strokeColor : '#000000',
                 dash: ops.dash ? ops.dash : 0,
                 // fillColor: ops.fillColor ? ops.fillColor : 'white',
                 // fillOpacity: ops.fillOpacity ? ops.fillOpacity : 0
@@ -414,7 +415,7 @@ PG.buildBoardElement = function(ops){
                 fixed: false,
                 name: ops.name ? ops.name : '',
                 highlight: false,
-                color: ops.color ? ops.color : 'black',
+                color: ops.color ? ops.color : '#000000',
                 showInfobox: false,
                 size: ops.size ? ops.size : 3
             });
@@ -433,7 +434,7 @@ PG.buildBoardElement = function(ops){
                 fixed: false,
                 highlight: false,
                 strokeWidth: ops.strokeWidth ? ops.strokeWidth : 3,
-                strokeColor: ops.strokeColor ? ops.strokeColor : 'black',
+                strokeColor: ops.strokeColor ? "#"+ops.strokeColor : '#000000',
                 dash: ops.dash ? ops.dash : 0,
                 straightFirst: (ops.end == 2 || ops.end == 3),
                 straightLast: (ops.end == 1 || ops.end == 3),
@@ -478,7 +479,7 @@ PG.buildBoardElement = function(ops){
                 anchorX: ops.anchorX == -1 ? 'right' : (ops.anchorX == 0 ? 'middle' : 'left'),
                 anchorY: ops.anchorY == -1 ? 'top' : (ops.anchorY == 0 ? 'middle' : 'bottom'),
                 fontSize: ops.fontSize,
-                color: ops.color,
+                color: "#" + ops.color,
                 useMathJax: true
             };
 
@@ -511,8 +512,8 @@ PG.buildBoardElement = function(ops){
                 fixed: true,
                 highlight: false,
                 strokeWidth: ops.strokeWidth,
-                strokeColor: ops.strokeColor,
-                fillColor: ops.fillColor,
+                strokeColor: "#"+ops.strokeColor,
+                fillColor: "#"+ops.fillColor,
                 fillOpacity: ops.fillOpacity,
                 dash: ops.dash
             };
@@ -532,7 +533,7 @@ PG.buildBoardElement = function(ops){
             var ats = {
                 fixed: true,
                 highlight: false,
-                fillColor: ops.fillColor,
+                fillColor: "#"+ops.fillColor,
                 fillOpacity: ops.fillOpacity,
                 inverse: ops.inverse
             }
@@ -559,18 +560,18 @@ PG.buildAestheticComponent = function(type, ops){
             break;
         case "color":
             return `
-                Color: <input class='element_colorInput' type='text' size=9 value='${ops.color ? ops.color : ''}'/>
+                Color: <input class="jscolor element_colorInput" value="${ops.color ? ops.color : 'black'}" size='8'>
             `;
             break;
         case "strokeColor":
             return `
-                Stroke Color: <input class='element_strokeColorInput' type='text' size=9 value='${ops.strokeColor ? ops.strokeColor : ''}'/>
+                Stroke Color: <input class="jscolor element_strokeColorInput" value="${ops.strokeColor ? ops.strokeColor : '000000'}" size='8'>
             `;
             break;
 
         case "fillColor":
             return `
-                Fill Color: <input class='element_fillColorInput' type='text' size=9 value='${ops.fillColor ? ops.fillColor : ''}'/>
+                Fill Color: <input class="jscolor element_fillColorInput" value="${ops.fillColor ? ops.fillColor : 'FF0000'}" size='8'>
             `;
             break;
 
