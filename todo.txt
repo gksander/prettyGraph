@@ -1,6 +1,7 @@
 - Text Anchoring
 - Segment relocating: use a setPosition instead of re-drawing
 
-- Collapse Properties
-
 - SAVE DIFFERENT FILES IN LOCALSTORAGE
+    -
+
+- REFACTOR SIDEBAR CONSTRUCTION TO JS, SO CONDITIONAL RENDERING CAN BE USED (SHOW/HIDE THINGS BASED ON LOCALSTORAGE)

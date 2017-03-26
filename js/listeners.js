@@ -15,10 +15,31 @@ $(function(){
             }
         }
     });
+
+
     // Unfold panels
     $(".panel-large-head").on('click', function(){
-        $(this).closest('.panel-large').find('.panel-large-body').slideToggle();
+        $(this).closest('.panel-large').find('.panel-large-body').toggleClass('hidden');
+        $(this).closest('.panel-large').find('.panel-large-head .fa').toggleClass('fa-folder fa-folder-open');
+        var vis = !$(this).closest('.panel-large').find('.panel-large-body').hasClass("hidden");
+        var id = $(this).closest('.panel-large').attr('id');
+
+
+        switch (id){
+            case "PGgraphingWindowPanel":
+                localStorage['PGgraphingWindowPanelShown'] = vis ? 1 : 0;
+                break;
+            case "PGelementPanel":
+                localStorage['PGelementPanelShown'] = vis ? 1 : 0;
+                break;
+            case "PGconstructionPanel":
+                localStorage['PGconstructionPanelShown'] = vis ? 1 : 0;
+                break;
+        }
+
     });
+
+
     // Open/Close sidebar
     $("#menubutton").on('click', function(){
 		$("body").toggleClass("sidebar-shown");

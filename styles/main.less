@@ -219,10 +219,19 @@ body {
         background: @primary-dark;
         color: white;
         cursor: pointer;
+        .fa {
+            float: left;
+            // font-size: 24px;
+            margin-left: 10px;
+            margin-top:2px;
+        }
     }
     .panel-large-body {
         display: block; // CHANGE TO NONE
         padding: 5px 15px;
+        &.hidden {
+            display: none;
+        }
     }
 }
 
