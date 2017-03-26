@@ -287,6 +287,20 @@ $(function(){
         PG.board.update();
     });
 
+    // When curve x(t) is changed
+    $("#elementList").on('change', '.element_curveX, .element_curveY', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        if ($(this).hasClass('element_curveX')) {
+            PG.els[id].x = $(this).val();
+        } else {
+            PG.els[id].y = $(this).val();
+        }
+
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+    });
+
     // When Text position is changed
     $("#elementList").on("change", '.element_textLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');

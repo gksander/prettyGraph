@@ -81,11 +81,6 @@ $(function(){ // On document ready -- Use this to set up web app
                     <h4>Global Font Size</h4>
                     <input type="text" id="graphFontSize" size='8'> px
                 </li>
-                <li>
-                    <h4>Save/Reset Board</h4>
-                    <button type='button' id='graphSaveBoard'>Save Construction in Browser</button>
-                    <button type='button' id='graphResetBoard'>Clear Entire Board</button>
-                </li>
             </ul>
         </div>
     </div>
@@ -103,6 +98,7 @@ $(function(){ // On document ready -- Use this to set up web app
                     <select name="newElementType" id="newElementType">
                         <option value="0">Choose one...</option>
                         <option value='functiongraph'>Function Graph</option>
+                        <option value='curve'>Curve</option>
                         <option value="text">Text</option>
                         <option value='point'>Point</option>
                         <option value="line">Line</option>
@@ -134,5 +130,5 @@ $(function(){ // On document ready -- Use this to set up web app
 
 // Configuration Options for JSXGraph
 JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 7, circle: 6,
-          curve: 5, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
+          curve: 7, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
 JXG.Options.text.fontSize = 20;

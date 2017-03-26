@@ -11,7 +11,7 @@ var PG = {
         'ticksDistance' : [1, 1],
         'minorTicks' : [1, 1],
         'globalFontSize': 20,
-        'showAxes' : 1
+        'showAxes' : true
     },
     board: "",
     els: {},
@@ -237,6 +237,7 @@ PG.initBoard = function(){
 
     // Build x-axis, strip ticks, re-define ticks
     // TODO: EVENTUALLY NEED TO BUILD PI-TICKS INTO THIS AS AN OPTION
+    // console.llog(PG.vars.showAxes)
     PG.tmp.xaxis = PG.board.create('axis', [[0,0], [1,0]], {
         strokeColor: 'black',
         strokeWidth: 2,
@@ -250,7 +251,8 @@ PG.initBoard = function(){
             useMathJax:true,
             anchorX:'right',
             anchorY: 'bottom'
-        }
+        },
+        visible: PG.vars.showAxes
     });
     PG.tmp.xaxis.removeAllTicks();
     PG.tmp.xAxisTicks = PG.board.create('ticks', [PG.tmp.xaxis], {
@@ -280,7 +282,8 @@ PG.initBoard = function(){
             useMathJax:true,
             anchorX: PG.vars.yLabelVertical ? 'right' : 'left',
             anchorY: 'top'
-        }
+        },
+        visible: PG.vars.showAxes
     });
     PG.tmp.yaxis.removeAllTicks();
     PG.tmp.yAxisTicks = PG.board.create('ticks', [PG.tmp.yaxis], {
@@ -350,12 +353,17 @@ PG.addNewElement = function(){
             PG.els[id].strokeWidth = 3;
             PG.els[id].strokeColor = "000000";
             PG.els[id].dash = 0;
-            // PG.els[id].fillColor = 'white';
-            // PG.els[id].fillOpacity = 0;
+            break;
+        case "curve":
+            PG.els[id].x = "2*cos(t)";
+            PG.els[id].y = "2*sin(t)";
+            PG.els[id].lowerBound = "0";
+            PG.els[id].upperBound = "1";
+            PG.els[id].strokeWidth = 3;
+            PG.els[id].strokeColor = "FF0000";
+            PG.els[id].dash = 0;
             break;
         case "point":
-            // PG.els[id].x = 1;
-            // PG.els[id].y = 2;
             PG.els[id].loc = "(1, 2)";
             PG.els[id].size = 3;
             PG.els[id].name = '';
@@ -380,7 +388,7 @@ PG.addNewElement = function(){
             PG.els[id].color = '161DFF';
             break;
         case "circle":
-            PG.els[id].loc = "(1,1)";
+            PG.els[id].loc = "(0,0)";
             PG.els[id].r = 2;
             PG.els[id].strokeWidth = 3;
             PG.els[id].strokeColor = '000000';
@@ -413,6 +421,24 @@ PG.buildElementHtml = function(ops){
                     ${PG.generateElementTitle('Function Graph', ops.id)}
 
                         <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
+                        <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
+                        <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
+                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
+                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
+                        <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
+                    </ul>
+                </li>
+            `;
+            break;
+
+        case "curve":
+            var os = `
+                <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
+                    ${PG.generateElementTitle('Curve', ops.id)}
+
+                        <li>x(t): <input type='text' class='element_curveX' value='${ops.x}' size='12'></li>
+                        <li>y(t): <input type='text' class='element_curveY' value='${ops.y}' size='12'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
                         <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
@@ -547,6 +573,23 @@ PG.buildBoardElement = function(ops){
                 ops.lowerBound ? math.eval(ops.lowerBound) : null,
                 ops.upperBound ? math.eval(ops.upperBound) : null
             ], ats)
+
+            break;
+
+        case "curve":
+
+            PG.tmp[id] = PG.board.create("curve", [
+                (x) => {return math.eval(ops.x, {t:x});},
+                (x) => {return math.eval(ops.y, {t:x});},
+                math.eval(ops.lowerBound),
+                math.eval(ops.upperBound)
+            ], {
+                fixed: true,
+                highlight: false,
+                strokeWidth: ops.strokeWidth,
+                strokeColor: "#"+ops.strokeColor,
+                dash: ops.dash
+            });
 
             break;
 
