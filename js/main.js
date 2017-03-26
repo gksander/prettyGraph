@@ -4,6 +4,11 @@
 
 $(function(){ // On document ready -- Use this to set up web app
 
+    // Make sure localStorage Variables are set up.
+    localStorage['PGconstructions'] = localStorage['PGconstructions'] ? localStorage['PGconstructions'] : "{}";
+    localStorage['PGcurrentConstruction'] = localStorage['PGcurrentConstruction'] ? localStorage['PGcurrentConstruction'] : "0";
+
+
     /* ---------------------------------------
         First, BUILD SIDE WINDOW
     --------------------------------------- */
@@ -15,7 +20,23 @@ $(function(){ // On document ready -- Use this to set up web app
         </div>
         <div class="panel-large-body ${localStorage['PGconstructionPanelShown'] === "0" ? 'hidden' : ''}">
 
-            <p>Construction options to come... (Save/Delete constructions)</p>
+            <ul id='constructionList'>
+                <li>
+                    <h4>Load Construction</h4>
+                    Load: <select id='PGconstructionSelectList'></select> <br/>
+                </li>
+                <li>
+                    <h4>Save Construction</h4>
+                    <p>Save Construction as: <input type='text' id='PGconstructionName'/> </p>
+                    <p><button class='btn btn-block' id='PGsaveConstruction' type='button'>Save Construction</button></p>
+                </li>
+                <li>
+                    <h4>Delete Construction</h4>
+                    <p>
+                        <button class='btn btn-block btn-danger' type='button' id='PGdeleteConstruction'>Delete Construction</button>
+                    </p>
+                </li>
+            </ul>
 
         </div>
     </div>
@@ -91,7 +112,7 @@ $(function(){ // On document ready -- Use this to set up web app
                     with ID: <input type='text' id='newElementId' size='8'/>
                 </p>
                 <p>
-                    <button type='button' id='newElementAddButton'>Create the Element</button>
+                    <button type='button' id='newElementAddButton' class='btn'>Create the Element</button>
                 </p>
             </div>
 
@@ -104,54 +125,14 @@ $(function(){ // On document ready -- Use this to set up web app
 
     $("#sidebar").html(sb);
 
+    PG.loadConstructionList(localStorage['PGcurrentConstruction']);
+    PG.getConstruction(localStorage['PGcurrentConstruction']);
+    PG.loadConstruction(localStorage['PGcurrentConstruction']);
 
-
-    /* ---------------------------------------
-        First, Fill in input boxes
-    --------------------------------------- */
-    // Box sizes
-    $("#graphWidth").val(PG.vars.boardWidth);
-    $("#graphHeight").val(PG.vars.boardHeight);
-    // Bounds
-    $("#graphxMin").val(PG.vars.bounds[0]);
-    $("#graphxMax").val(PG.vars.bounds[1]);
-    $("#graphyMin").val(PG.vars.bounds[2]);
-    $("#graphyMax").val(PG.vars.bounds[3]);
-    // Ticks Distance
-    $("#graphXTicksDistance").val(PG.vars.ticksDistance[0]);
-    $("#graphYTicksDistance").val(PG.vars.ticksDistance[1]);
-    // MinorTicks
-    $("#graphXMinorTicks").val(PG.vars.minorTicks[0]);
-    $("#graphYMinorTicks").val(PG.vars.minorTicks[1]);
-    // Axis Labels
-    $("#graphxLabel").val(PG.vars.xLabel);
-    $("#graphyLabel").val(PG.vars.yLabel);
-    $("#verticalyLabel").attr('checked', PG.vars.yLabelVertical);
-    // Hide/Show Graph
-    $("#graphShowAxes").val(PG.vars.showAxes);
-    // Global FontSize
-    $("#graphFontSize").val(PG.vars.globalFontSize);
-
-    /* ---------------------------------------
-        Check for which option windows are open/closed
-    --------------------------------------- */
-    // console.log(localStorage['PGgraphingWindowPanelShown']);
-    // if (localStorage['PGgraphingWindowPanelShown'] == 0) {
-    //     console.log('closed');
-    //     $("#PGgraphingWindowPanel").find('.panel-large-body').addClass("hidden");
-    // }
-
-
-    /* ---------------------------------------
-        Then, initialize board and pull stored elements
-    --------------------------------------- */
-
-    PG.initBoard();
-    PG.pullStoredElements();
 
 }); // End of Document Ready
 
 // Configuration Options for JSXGraph
 JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 7, circle: 6,
           curve: 5, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
-JXG.Options.text.fontSize = PG.vars.globalFontSize;
+JXG.Options.text.fontSize = 20;

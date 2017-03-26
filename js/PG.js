@@ -2,9 +2,9 @@
 var PG = {
     tmp: {},
     // CHeck for stored variables, otherwise set some defaults
-    vars: localStorage['PGvars'] ? JSON.parse(localStorage['PGvars']) : {
-        'boardWidth': 400,
-        'boardHeight': 400,
+    default_vars: {
+        'boardWidth': 450,
+        'boardHeight': 450,
         'bounds': [-5, 5, -5, 5],
         'xLabel' : '$x$',
         'yLabel' : '$y$',
@@ -14,18 +14,150 @@ var PG = {
         'showAxes' : 1
     },
     board: "",
-    els: localStorage['PGels'] ? JSON.parse(localStorage['PGels']) : {}
+    els: {},
+    currentConstruction: ""
 };
+
+
+/* ---------------------------------------
+ ----- Get Construction from Local Storage ---------
+ ------------------------------------ */
+PG.getConstruction = function(cons){
+    try {
+        var constructions = JSON.parse(localStorage['PGconstructions']);
+        var c = constructions[cons];
+        PG.vars = c.vars;
+        PG.els = c.els;
+    } catch (err){
+        PG.vars = PG.default_vars;
+        PG.els = {};
+    }
+
+    PG.tmp = {};
+    $("#elementList").empty();
+
+}
+
+
+/* ---------------------------------------
+ ----- Start Construction ---------
+ ------------------------------------ */
+PG.loadConstruction = function(cons){
+    // Load construction list
+    try{
+        JXG.JSXGraph.freeBoard(PG.board);
+    } catch(err){}
+
+
+    $("#PGconstructionName").val(cons ? cons : '');
+
+    // Box sizes
+    $("#graphWidth").val(PG.vars.boardWidth);
+    $("#graphHeight").val(PG.vars.boardHeight);
+    // Bounds
+    $("#graphxMin").val(PG.vars.bounds[0]);
+    $("#graphxMax").val(PG.vars.bounds[1]);
+    $("#graphyMin").val(PG.vars.bounds[2]);
+    $("#graphyMax").val(PG.vars.bounds[3]);
+    // Ticks Distance
+    $("#graphXTicksDistance").val(PG.vars.ticksDistance[0]);
+    $("#graphYTicksDistance").val(PG.vars.ticksDistance[1]);
+    // MinorTicks
+    $("#graphXMinorTicks").val(PG.vars.minorTicks[0]);
+    $("#graphYMinorTicks").val(PG.vars.minorTicks[1]);
+    // Axis Labels
+    $("#graphxLabel").val(PG.vars.xLabel);
+    $("#graphyLabel").val(PG.vars.yLabel);
+    $("#verticalyLabel").attr('checked', PG.vars.yLabelVertical);
+    // Hide/Show Graph
+    $("#graphShowAxes").val(PG.vars.showAxes);
+    // Global FontSize
+    $("#graphFontSize").val(PG.vars.globalFontSize);
+
+    PG.initBoard();
+    PG.pullStoredElements();
+    PG.registerBoxEvents();
+}
+
+
+/* ---------------------------------------
+ ----- lOAD CONSTRUCTION LIST ---------
+ ------------------------------------ */
+PG.loadConstructionList = function(toLoad){
+    var constructions = JSON.parse(localStorage['PGconstructions']);
+    var os = "<option>New Construction</option>";
+    for (var i in constructions) {
+        os += `<option value='${i}' ${i==toLoad ? 'selected' : ''}>${i}</option>`;
+    }
+    $("#PGconstructionSelectList").html(os);
+}
+
+
+
+// REGISTER BOX EVENT LISTENERS, USED WHEN CONSTRUCTION IS CHANGED
+PG.registerBoxEvents = function(){
+    // When bounding box is changed.
+    PG.board.on('boundingbox', function(){
+        var bounds = PG.board.getBoundingBox();
+        var xmin = bounds[0],
+            xmax = bounds[2],
+            ymin = bounds[3],
+            ymax = bounds[1];
+
+        PG.vars.bounds = [xmin, xmax, ymin, ymax];
+        $("#graphxMin").val(xmin);
+        $("#graphxMax").val(xmax);
+        $("#graphyMin").val(ymin);
+        $("#graphyMax").val(ymax);
+
+    });
+};
+
+
 
 /* ---------------------------------------
  ----- Some Worker Functions ---------
  ------------------------------------ */
 
 // Save to localStorage
-PG.saveVars = function(){
-    localStorage['PGvars'] = JSON.stringify(PG.vars);
-    localStorage['PGels'] = JSON.stringify(PG.els);
+PG.saveConstruction = function(){
+    PG.currentConstruction = $("#PGconstructionName").val();
+    // Make sure construction name is non-empty
+    if (PG.currentConstruction == ""){
+        PG.modalMessage("Whoops!", "Make sure you give your construction a name in the 'Save Construction As' section.");
+        return false;
+    }
+    // Save current construction
+    localStorage['PGcurrentConstruction'] = PG.currentConstruction;
+
+    // Look for the construction name in PGconstructions
+    var constructions = JSON.parse(localStorage['PGconstructions']);
+
+    constructions[PG.currentConstruction] = {
+        vars: PG.vars,
+        els: PG.els
+    };
+    localStorage['PGconstructions'] = JSON.stringify(constructions);
+
+    // Regenerate select list
+    PG.loadConstructionList(PG.currentConstruction);
 }
+
+PG.deleteConstruction = function(){
+    var conf = confirm("Are you sure you want to delete this construction?");
+    if (conf){
+        try {
+            var constructions = JSON.parse(localStorage['PGconstructions']);
+            delete constructions[$("#PGconstructionName").val()];
+            localStorage['PGconstructions'] = JSON.stringify(constructions);
+        } catch (err) {}
+
+        PG.getConstruction('');
+        PG.loadConstruction('');
+        PG.loadConstructionList('');
+    }
+};
+
 // Drop all local storage
 PG.dropVars = function(){
     localStorage['PGvars'] = "";
@@ -428,7 +560,7 @@ PG.buildBoardElement = function(ops){
                 fixed: false,
                 name: ops.name ? ops.name : '',
                 highlight: false,
-                color: ops.color ? ops.color : '#000000',
+                color: ops.color ? "#"+ops.color : '#000000',
                 showInfobox: false,
                 size: ops.size ? ops.size : 3
             });

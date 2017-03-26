@@ -1,9 +1,4 @@
 - Text Anchoring
 - Segment relocating: use a setPosition instead of re-drawing
 
-- SAVE DIFFERENT FILES IN LOCALSTORAGE
-    * Continue using PG['els'] and PG['vars'] for constructions
-    * Swap these when construction is changed, then regenerate inputs/board
-    * Save all constructions in a localStorage['PGconstructions'] variable.
-
-- SAVE PANEL STATE FOR ELEMENTS, DO THIS IN PG['els'][element].panelShown
+- SHIFT TOWARDS LOKIJS FOR IN-MEMORY DB, save data at end of session?
