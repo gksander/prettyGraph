@@ -206,8 +206,11 @@ $(function(){
 
     // Open/Close Attribute Folder
     $("#elementList").on("click", ".attribute-folder", function(){
-        // var id = $(this).closest("li.elementItem").attr('id');
+        // Get the id, toggle folder icon, save the state in PG.els[id], toggle view
+        var id = $(this).closest("li.elementItem").attr('id');
         $(this).toggleClass("fa-folder fa-folder-open");
+
+        PG.els[id].panelShown = $(this).hasClass("fa-folder-open");
         $(this).closest("li.elementItem").find("ul").slideToggle();
     });
 

@@ -203,11 +203,11 @@ PG.addNewElement = function(){
 
     $("#newElementType").val(0);
     $("#newElementId").val('');
-    // var id = Math.random().toString(36).substring(2,8);
     // Start building element object
     PG.els[id] = {
         id: id,
-        type: type
+        type: type,
+        panelShown: true
     }
     // Set some defaults based on type
     switch (type){
@@ -272,13 +272,14 @@ PG.addNewElement = function(){
 
 // BUILD ELEMENT HTML
 PG.buildElementHtml = function(ops){
+    // ${PG.els[ops.id].panelShown ? '' : "style='display:none'"}
     // Build HTML based on type
     switch (ops.type) {
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Function Graph', ops.id)}
-                    <ul>
+
                         <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
                         <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
@@ -295,7 +296,7 @@ PG.buildElementHtml = function(ops){
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Point', ops.id)}
-                    <ul>
+
                         <li>Location: <input type='text' class='element_pointLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('size', {size: ops.size})}</li>
                         <li>${PG.buildAestheticComponent('name', {name: ops.name})}</li>
@@ -310,7 +311,7 @@ PG.buildElementHtml = function(ops){
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Line (Segment)', ops.id)}
-                    <ul>
+
                         <li>Start Location: <input type='text' class='element_segmentStartLoc' size=12 value='${ops.startLoc}'></li>
                         <li>Ending Location: <input type='text' class='element_segmentEndLoc' size=12 value='${ops.endLoc}'></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
@@ -328,7 +329,7 @@ PG.buildElementHtml = function(ops){
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Text', ops.id)}
-                    <ul>
+
                         <li>Text: <input type='text' class='element_text' size=15 value='${ops.text}'/></li>
                         <li>Location: <input type='text' class='element_textLoc' size='12' value='${ops.loc}'/></li>
                         <li>${PG.buildAestheticComponent('fontSize', {fontSize: ops.fontSize})}</li>
@@ -343,7 +344,7 @@ PG.buildElementHtml = function(ops){
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Circle', ops.id)}
-                    <ul>
+
                         <li>Center: <input type='text' class='element_circleLoc' size=8 value='${ops.loc}'></li>
                         <li>Radius: <input type='text' class='element_circleR' size='8' value='${ops.r}'/></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
@@ -360,7 +361,7 @@ PG.buildElementHtml = function(ops){
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Inequality', ops.id)}
-                    <ul>
+
                         <li>Line: <input type='text' class='element_ineqLine' size=8 value='${ops.line}'></li>
                         <li>Inverse: <input class='element_ineqInvert' type='checkbox' ${ops.inverse ? 'checked' : ''} /></li>
                         <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
@@ -376,13 +377,15 @@ PG.buildElementHtml = function(ops){
     jscolor.installByClassName("jscolor");
 }
 
+// This function generates the element list item title AND starting ul tag.
 PG.generateElementTitle = function(type, id){
     return `
     <p>
         <i class="fa fa-times deleteItem" aria-hidden="true"></i>
         ${type}: <span class='elId'>${id}</span>
-        <i class="fa fa-folder-open attribute-folder" aria-hidden="true"></i>
+        <i class="fa ${PG.els[id].panelShown ? 'fa-folder-open' : "fa-folder"} attribute-folder" aria-hidden="true"></i>
     </p>
+    <ul ${PG.els[id].panelShown ? '' : "style='display:none'"}>
     `;
 }
 
