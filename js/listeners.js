@@ -188,11 +188,25 @@ $(function(){
     });
 
     // Toggle Axes
-    $("#graphShowAxes").on("input", function(){
+    $("#graphShowXAxis").on("input", function(){
         var show = parseInt($(this).val());
-        PG.vars.showAxes = show;
+        PG.vars.showXAxis = show;
         PG.tmp.xaxis.setAttribute({visible: show==1 ? true : false});
+        PG.tmp.xAxisTicks.setAttribute({
+            drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1,
+            majorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 15 : -1,
+            minorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 10 : -1
+        });
+    });
+    $("#graphShowYAxis").on("input", function(){
+        var show = parseInt($(this).val());
+        PG.vars.showYAxis = show;
         PG.tmp.yaxis.setAttribute({visible: show==1 ? true : false});
+        PG.tmp.xAxisTicks.setAttribute({
+            drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1,
+            majorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 15 : -1,
+            minorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 10 : -1
+        });
     });
 
     // Change Global FontSize

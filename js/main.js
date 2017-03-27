@@ -85,8 +85,11 @@ $(function(){ // On document ready -- Use this to set up web app
                     </ul>
                 </li>
                 <li>
-                    <h4>Show Axes</h4>
-                    <input type="range" id="graphShowAxes" min='0' max='1' value='1' class='short-range'>
+                    <h4>Visibility</h4>
+                    <ul>
+                        <li>Show x-axes: <input type="range" id="graphShowXAxis" min='0' max='1' value='1' class='short-range'></li>
+                        <li>Show y-axes: <input type="range" id="graphShowYAxis" min='0' max='1' value='1' class='short-range'></li>
+                    </ul>
                 </li>
                 <li>
                     <h4>Global Font Size</h4>
@@ -140,6 +143,6 @@ $(function(){ // On document ready -- Use this to set up web app
 }); // End of Document Ready
 
 // Configuration Options for JSXGraph
-JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 7, circle: 6,
+JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 9, circle: 6,
           curve: 7, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
 JXG.Options.text.fontSize = 20;

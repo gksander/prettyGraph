@@ -13,7 +13,8 @@ var PG = {
         'globalFontSize': 20,
         'axesThickness': 2,
         'axesColor': "000000",
-        'showAxes' : true
+        'showXAxis' : 1,
+        'showYAxis': 1
     },
     board: "",
     els: {},
@@ -74,8 +75,9 @@ PG.loadConstruction = function(cons){
     // Axis thickness and color
     $("#graphAxesThickness").val(PG.vars.axesThickness ? PG.vars.axesThickness : 2);
     $("#graphAxesColor").val(PG.vars.axesColor ? PG.vars.axesColor : "000000");
-    // Hide/Show Graph
-    $("#graphShowAxes").val(PG.vars.showAxes);
+    // Hide/Show Axes
+    $("#graphShowXAxis").val(PG.vars.showXAxis);
+    $("#graphShowYAxis").val(PG.vars.showYAxis);
     // Global FontSize
     $("#graphFontSize").val(PG.vars.globalFontSize);
 
@@ -257,18 +259,22 @@ PG.initBoard = function(){
             anchorX:'right',
             anchorY: 'bottom'
         },
-        visible: PG.vars.showAxes
+        visible: PG.vars.showXAxis == 1 ? true : false,
+        // drawZero: PG.vars.showXAxis == 1 ? true : false
+
     });
     PG.tmp.xaxis.removeAllTicks();
     PG.tmp.xAxisTicks = PG.board.create('ticks', [PG.tmp.xaxis], {
       ticksDistance: PG.vars.ticksDistance[0],
       strokeColor: 'rgba(150,150,150,0.85)',
-      majorHeight: -1,
-      minorHeight: -1,
+      majorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 15 : -1,
+      minorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 10 : -1,
       highlight:false,
       drawLabels: true,
       label: {offset:[0,-5], anchorY:'top', anchorX:'middle', highlight:false},
-      minorTicks: PG.vars.minorTicks[0]
+      minorTicks: PG.vars.minorTicks[0],
+      visible: PG.vars.showXAxis == 1 ? true : false,
+      drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1
     });
 
     // Build y-axis, strip ticks, re-define ticks
@@ -288,7 +294,7 @@ PG.initBoard = function(){
             anchorX: PG.vars.yLabelVertical ? 'right' : 'left',
             anchorY: 'top'
         },
-        visible: PG.vars.showAxes
+        visible: PG.vars.showYAxis == 1 ? true : false
     });
     PG.tmp.yaxis.removeAllTicks();
     PG.tmp.yAxisTicks = PG.board.create('ticks', [PG.tmp.yaxis], {
@@ -331,7 +337,7 @@ PG.addNewElement = function(){
         return false;
     }
     // Get ID, declare a random one if ID is empty
-    var id = $("#newElementId").val();
+    var id = $("#newElementId").val().replace(/ /g,'');
     id = id === "" ? Math.random().toString(36).substring(2,8) : id;
 
     // Check to see if ID is already in use
