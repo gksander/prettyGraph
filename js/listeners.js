@@ -5,6 +5,9 @@ $(function(){
 
     // Bind key events
     $(window).on('keydown', function(event) {
+        if (event.keyCode == 27){
+            $("body").removeClass("modal-shown")
+        }
         if (event.ctrlKey || event.metaKey) {
             switch (String.fromCharCode(event.which).toLowerCase()) {
             case 's':
@@ -65,6 +68,11 @@ $(function(){
 
     $("#PGdeleteConstruction").on("click", function(){
         PG.deleteConstruction();
+    });
+
+    // Help buttons
+    $("#sidebar").on("click", ".fa-question-circle", function(){
+        PG.modalMessage("Here, have some info!", $(this).attr('data-message') ? $(this).attr('data-message') : "Looks like someone goofed and forgot to put info here...");
     });
 
 

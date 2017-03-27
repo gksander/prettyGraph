@@ -101,7 +101,6 @@ PG.loadConstruction = function(cons){
     PG.initBoard();
     PG.pullStoredElements();
     PG.registerBoxEvents();
-    jscolor.installByClassName("jscolor");
 }
 
 
@@ -110,7 +109,7 @@ PG.loadConstruction = function(cons){
  ------------------------------------ */
 PG.loadConstructionList = function(toLoad){
     var constructions = JSON.parse(localStorage['PGconstructions']);
-    var os = "<option>New Construction</option>";
+    var os = "<option value='0'>New Construction</option>";
     for (var i in constructions) {
         os += `<option value='${i}' ${i==toLoad ? 'selected' : ''}>${i}</option>`;
     }
@@ -566,10 +565,58 @@ PG.buildElementHtml = function(ops){
 
 // This function generates the element list item title AND starting ul tag.
 PG.generateElementTitle = function(type, id){
+    var msg = "...";
+    switch (type){
+        case "Function Graph":
+            msg = "Enter a function definition, such as x^2 or sin(x). You can change the lower and upper bound of the domain of the function. If you leave the lower/upper bound inputs empty, the domain of the function will be all possible values.";
+            break;
+        case "Curve":
+            msg = `
+            <p>
+                This defines a parametric curve (x(t), y(t)) for a &le; t &le; b, where you can control a and b using the Lower Bound and Upper Bound properties. Here are a couple ways you might use the Curve element:
+            </p>
+            <ul>
+                <li><u>If you want to create an arc</u> on a circle with a radius of r, centered at (0,0), from the 3-o'clock position to an angle of &alpha;, you could define x(t) = r*cos(&alpha;*t) and y(t) = r*sin(&alpha;*t), where 0 &le; t &le; 1.</li>
+                <li>
+                    <u>If you want to create a segment</u> from (a, b) to (c, d), define x(t) = t*a + (1-t)*c and y(t) = t*b + (1-t)*d where 0 &le; t &le; 1
+                </li>
+            </ul>
+            `;
+            break;
+        case "Point":
+            msg = `
+            This defines a point at the location given. Use the form (X, Y) for the point location. You can also use expressions as the x and y coordinates, e.g. Location = (3*cos(1), 3*sin(1)).
+            `;
+            break;
+        case "Line (Segment)":
+            msg = `
+            <p>This line passes through the Starting and Ending locations. If you have defined a point, you can take the ID of the point and pass it as a starting or ending location of the line.</p>
+            <p>By default, a line segment is formed. Use the &quot;Ending&quot; slider to turn the segment into a ray or a line.</p>
+            `;
+            break;
+        case "Circle":
+            msg = `
+            This defines a circle with a specified center and radius. The center of the circle can be previously defined point (just pass the ID of the point as the Center of the circle).
+            `;
+            break;
+        case "Inequality":
+            msg = `
+            This defines an &quot;inequality.&quot; Pass the ID of a previously defined line to the Line property, and the graph will be shaded below the line. Use the &quot;Inverse&quot; checkbox to shade above the line.
+            `;
+            break;
+        case "Text":
+            msg = `
+
+            `;
+            break;
+    }
+
     return `
     <p>
         <i class="fa fa-times deleteItem" aria-hidden="true"></i>
         ${type}: <span class='elId'>${id}</span>
+        <i class="fa fa-question-circle" aria-hidden="true" data-message="${msg}"></i>
+
         <i class="fa ${PG.els[id].panelShown ? 'fa-folder-open' : "fa-folder"} attribute-folder" aria-hidden="true"></i>
     </p>
     <ul ${PG.els[id].panelShown ? '' : "style='display:none'"}>
