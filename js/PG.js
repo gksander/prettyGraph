@@ -22,6 +22,23 @@ var PG = {
 };
 
 
+PG.setDefaults = function(vars){
+    return {
+        'boardWidth': vars.boardWidth ? vars.boardWidth : 450,
+        'boardHeight': vars.boardHeight ? vars.boardHeight : 450,
+        'bounds': vars.bounds ? vars.bounds : [-5, 5, -5, 5],
+        'xLabel' : vars.xLabel ? vars.xLabel : '$x$',
+        'yLabel' : vars.yLabel ? vars.yLabel : '$y$',
+        'ticksDistance' : vars.ticksDistance ? vars.ticksDistance : [1, 1],
+        'minorTicks' : vars.minorTicks ? vars.minorTicks : [1, 1],
+        'globalFontSize': vars.globalFontSize ? vars.globalFontSize : 20,
+        'axesThickness': vars.axesThickness ? vars.axesThickness : 2,
+        'axesColor': vars.axesColor ? vars.axesColor : "000000",
+        'showXAxis' : vars.showXAxis ? vars.showXAxis : 1,
+        'showYAxis': vars.showYAxis ? vars.showYAxis : 1
+    };
+}
+
 /* ---------------------------------------
  ----- Get Construction from Local Storage ---------
  ------------------------------------ */
@@ -29,10 +46,10 @@ PG.getConstruction = function(cons){
     try {
         var constructions = JSON.parse(localStorage['PGconstructions']);
         var c = constructions[cons];
-        PG.vars = c.vars;
+        PG.vars = PG.setDefaults(c.vars);
         PG.els = c.els;
     } catch (err){
-        PG.vars = PG.default_vars;
+        PG.vars = PG.setDefaults({});
         PG.els = {};
     }
 
@@ -52,7 +69,7 @@ PG.loadConstruction = function(cons){
     } catch(err){}
 
 
-    $("#PGconstructionName").val(cons ? cons : '');
+    $("#PGconstructionName").val(cons != 0 ? cons : '');
 
     // Box sizes
     $("#graphWidth").val(PG.vars.boardWidth);
@@ -84,6 +101,7 @@ PG.loadConstruction = function(cons){
     PG.initBoard();
     PG.pullStoredElements();
     PG.registerBoxEvents();
+    jscolor.installByClassName("jscolor");
 }
 
 
