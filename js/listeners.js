@@ -173,6 +173,20 @@ $(function(){
         location.reload();
     });
 
+    // CHange Axes Thickness
+    $("#graphAxesThickness").on('input', function(){
+        PG.vars.axesThickness = $(this).val();
+        PG.tmp.xaxis.setAttribute({strokeWidth: PG.vars.axesThickness});
+        PG.tmp.yaxis.setAttribute({strokeWidth: PG.vars.axesThickness});
+    });
+
+    // CHange Axes Color
+    $("#graphAxesColor").on('change', function(){
+        PG.vars.axesColor = $(this).val();
+        PG.tmp.xaxis.setAttribute({strokeColor: "#"+PG.vars.axesColor});
+        PG.tmp.yaxis.setAttribute({strokeColor: "#"+PG.vars.axesColor});
+    });
+
     // Toggle Axes
     $("#graphShowAxes").on("input", function(){
         var show = parseInt($(this).val());

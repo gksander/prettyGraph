@@ -74,6 +74,17 @@ $(function(){ // On document ready -- Use this to set up web app
                     y-axis: <input type="text" id="graphyLabel" class="axisLabel" size='8'> Vertical? <input type="checkbox" id="verticalyLabel">
                 </li>
                 <li>
+                    <h4>Axis Styles</h4>
+                    <ul>
+                        <li>
+                            Axis Thickness: <input type='range' class='long-range' id='graphAxesThickness' min='1' max='9' value='2' >
+                        </li>
+                        <li>
+                            Axis Color: <input class='jscolor' id='graphAxesColor' value='000000'>
+                        </li>
+                    </ul>
+                </li>
+                <li>
                     <h4>Show Axes</h4>
                     <input type="range" id="graphShowAxes" min='0' max='1' value='1' class='short-range'>
                 </li>

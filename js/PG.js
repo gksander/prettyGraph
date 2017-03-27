@@ -11,6 +11,8 @@ var PG = {
         'ticksDistance' : [1, 1],
         'minorTicks' : [1, 1],
         'globalFontSize': 20,
+        'axesThickness': 2,
+        'axesColor': "000000",
         'showAxes' : true
     },
     board: "",
@@ -69,6 +71,9 @@ PG.loadConstruction = function(cons){
     $("#graphxLabel").val(PG.vars.xLabel);
     $("#graphyLabel").val(PG.vars.yLabel);
     $("#verticalyLabel").attr('checked', PG.vars.yLabelVertical);
+    // Axis thickness and color
+    $("#graphAxesThickness").val(PG.vars.axesThickness ? PG.vars.axesThickness : 2);
+    $("#graphAxesColor").val(PG.vars.axesColor ? PG.vars.axesColor : "000000");
     // Hide/Show Graph
     $("#graphShowAxes").val(PG.vars.showAxes);
     // Global FontSize
@@ -99,10 +104,10 @@ PG.registerBoxEvents = function(){
     // When bounding box is changed.
     PG.board.on('boundingbox', function(){
         var bounds = PG.board.getBoundingBox();
-        var xmin = bounds[0],
-            xmax = bounds[2],
-            ymin = bounds[3],
-            ymax = bounds[1];
+        var xmin = bounds[0].toFixed(2),
+            xmax = bounds[2].toFixed(2),
+            ymin = bounds[3].toFixed(2),
+            ymax = bounds[1].toFixed(2);
 
         PG.vars.bounds = [xmin, xmax, ymin, ymax];
         $("#graphxMin").val(xmin);
@@ -239,14 +244,14 @@ PG.initBoard = function(){
     // TODO: EVENTUALLY NEED TO BUILD PI-TICKS INTO THIS AS AN OPTION
     // console.llog(PG.vars.showAxes)
     PG.tmp.xaxis = PG.board.create('axis', [[0,0], [1,0]], {
-        strokeColor: 'black',
-        strokeWidth: 2,
+        strokeColor: PG.vars.axesColor ? "#"+PG.vars.axesColor : "#000000",
+        strokeWidth: PG.vars.axesThickness ? PG.vars.axesThickness : 2,
         highlight:false,
         name: PG.vars.xLabel,
         withLabel: true,
         label: {
             position:'rt',
-            offset:[5,5],
+            offset:[5,10],
             highlight:false,
             useMathJax:true,
             anchorX:'right',
@@ -268,8 +273,8 @@ PG.initBoard = function(){
 
     // Build y-axis, strip ticks, re-define ticks
     PG.tmp.yaxis = PG.board.create('axis', [[0,0], [0,1]], {
-        strokeColor: 'black',
-        strokeWidth: 2,
+        strokeColor: PG.vars.axesColor ? "#"+PG.vars.axesColor : "#000000",
+        strokeWidth: PG.vars.axesThickness ? PG.vars.axesThickness : 2,
         highlight:false,
         name: PG.vars.yLabel,
         withLabel: true,
@@ -277,7 +282,7 @@ PG.initBoard = function(){
             display: PG.vars.yLabelVertical ? 'internal' : 'html',
             rotate: PG.vars.yLabelVertical ? 90 : 0,
             position:'rt',
-            offset: [5,5],
+            offset: [10,5],
             highlight:false,
             useMathJax:true,
             anchorX: PG.vars.yLabelVertical ? 'right' : 'left',
