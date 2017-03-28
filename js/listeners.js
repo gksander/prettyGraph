@@ -224,6 +224,21 @@ $(function(){
         location.reload();
     });
 
+    $("#graphLabelFontSize").on("change", function(){
+        var size = parseInt($(this).val());
+        PG.vars.labelFontSize = size;
+        // xAxis
+        PG.tmp.xaxis.label.setAttribute({fontSize: size});
+        var xatl = PG.tmp.xAxisTicks.getAttribute('label');
+        xatl['fontSize'] = size;
+        PG.tmp.xAxisTicks.setAttribute({label: xatl});
+        // yAxis
+        PG.tmp.yaxis.label.setAttribute({fontSize: size});
+        var yatl = PG.tmp.yAxisTicks.getAttribute('label');
+        yatl['fontSize'] = size;
+        PG.tmp.yAxisTicks.setAttribute({label: yatl});
+    });
+
 
     /* ---------------------------------------------
     ------ Adding/Dropping/Saving --------------------

@@ -14,7 +14,8 @@ var PG = {
         'axesThickness': 2,
         'axesColor': "000000",
         'showXAxis' : 1,
-        'showYAxis': 1
+        'showYAxis': 1,
+        'labelFontSize': 20
     },
     board: "",
     els: {},
@@ -34,8 +35,9 @@ PG.setDefaults = function(vars){
         'globalFontSize': vars.globalFontSize ? vars.globalFontSize : 20,
         'axesThickness': vars.axesThickness ? vars.axesThickness : 2,
         'axesColor': vars.axesColor ? vars.axesColor : "000000",
-        'showXAxis' : vars.showXAxis ? vars.showXAxis : 1,
-        'showYAxis': vars.showYAxis ? vars.showYAxis : 1
+        'showXAxis' : vars.showXAxis!==null ? vars.showXAxis : 1,
+        'showYAxis': vars.showYAxis!==null ? vars.showYAxis : 1,
+        'labelFontSize': vars.labelFontSize ? vars.labelFontSize : 20
     };
 }
 
@@ -96,7 +98,8 @@ PG.loadConstruction = function(cons){
     $("#graphShowXAxis").val(PG.vars.showXAxis);
     $("#graphShowYAxis").val(PG.vars.showYAxis);
     // Global FontSize
-    $("#graphFontSize").val(PG.vars.globalFontSize);
+    // $("#graphFontSize").val(PG.vars.globalFontSize);
+    $("#graphLabelFontSize").val(PG.vars.labelFontSize);
 
     PG.initBoard();
     PG.pullStoredElements();
@@ -274,9 +277,10 @@ PG.initBoard = function(){
             highlight:false,
             useMathJax:true,
             anchorX:'right',
-            anchorY: 'bottom'
+            anchorY: 'bottom',
+            fontSize: PG.vars.labelFontSize
         },
-        visible: PG.vars.showXAxis == 1 ? true : false,
+        // visible: PG.vars.showXAxis == 1 ? true : false
         // drawZero: PG.vars.showXAxis == 1 ? true : false
 
     });
@@ -288,11 +292,20 @@ PG.initBoard = function(){
       minorHeight: (PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1) ? 10 : -1,
       highlight:false,
       drawLabels: true,
-      label: {offset:[0,-5], anchorY:'top', anchorX:'middle', highlight:false},
+      label: {
+          offset:[0,-5],
+          anchorY:'top',
+          anchorX:'middle',
+          highlight:false,
+          fontSize: PG.vars.labelFontSize
+      },
       minorTicks: PG.vars.minorTicks[0],
-      visible: PG.vars.showXAxis == 1 ? true : false,
+    //   visible: PG.vars.showXAxis == 1 ? true : false,
       drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1
     });
+    if (PG.vars.showXAxis === 0){
+        PG.tmp.xaxis.setAttribute({visible: false});
+    }
 
     // Build y-axis, strip ticks, re-define ticks
     PG.tmp.yaxis = PG.board.create('axis', [[0,0], [0,1]], {
@@ -309,9 +322,10 @@ PG.initBoard = function(){
             highlight:false,
             useMathJax:true,
             anchorX: PG.vars.yLabelVertical ? 'right' : 'left',
-            anchorY: 'top'
+            anchorY: 'top',
+            fontSize: PG.vars.labelFontSize
         },
-        visible: PG.vars.showYAxis == 1 ? true : false
+        // visible: PG.vars.showYAxis == 1 ? true : false
     });
     PG.tmp.yaxis.removeAllTicks();
     PG.tmp.yAxisTicks = PG.board.create('ticks', [PG.tmp.yaxis], {
@@ -321,9 +335,18 @@ PG.initBoard = function(){
       minorHeight: -1,
       highlight:false,
       drawLabels: true,
-      label: {offset:[-5,0], anchorY:'middle', anchorX:'right', highlight:false},
+      label: {
+          offset:[-5,0],
+          anchorY:'middle',
+          anchorX:'right',
+          highlight:false,
+          fontSize: PG.vars.labelFontSize
+      },
       minorTicks: PG.vars.minorTicks[1]
     });
+    if (PG.vars.showYAxis === 0){
+        PG.tmp.yaxis.setAttribute({visible: false});
+    }
 }
 
 
@@ -606,7 +629,7 @@ PG.generateElementTitle = function(type, id){
             break;
         case "Text":
             msg = `
-
+            This creates text at the given location. You can use LaTeX notation using $'s, such as $-\\frac{b}{2a}$.
             `;
             break;
     }

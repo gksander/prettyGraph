@@ -109,6 +109,9 @@ $(function(){ // On document ready -- Use this to set up web app
                         <li>
                             Axis Color: <input class='jscolor' id='graphAxesColor' value='000000'>
                         </li>
+                        <li>
+                            Label Size: <input id='graphLabelFontSize' type='text' size='8'/> 
+                        </li>
                     </ul>
                 </li>
                 <li>

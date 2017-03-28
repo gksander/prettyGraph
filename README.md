@@ -1,4 +1,8 @@
 # prettyGraph
-A little JS package to generate pretty math graphs
+A little JS package to generate pretty math graphs. Built by Grant Sander, on top of:
+    * JSXGraph
+    * MathJax
+    * MathJS
+    * jsColor
 
-Built on top of the amazing packages: MathJax, JSXGraph and MathJS. The "worker" scripts is js/main.js.
+The scripts are found in the JS folder. PREPROS is used to concat, babel, and minify the scripts into main-dist.js.

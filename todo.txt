@@ -1,9 +1,5 @@
 - Text Anchoring
-- Segment relocating: use a setPosition instead of re-drawing
 
 - SHIFT TOWARDS LOKIJS FOR IN-MEMORY DB, save data at end of session?
 
 - GENERAL GRAPH PROPERTIES TO ADD:
-
-- SANITIZE PG.VARS WHEN Load
-    * Make sure to set some defaults, so easier to work with updates.
