@@ -246,6 +246,16 @@ $(function(){
 
     // Adding a new element
     $("#newElementAddButton").on("click", PG.addNewElement);
+    $("#newElementId").on("keyup", function(e){
+        // if (e.which == 13) PG.addNewElement;
+        if (e.which == 13){
+            PG.addNewElement();
+            $(this).blur();
+        }
+    });
+    $("#newElementType").on("change", function(){
+        if ($(this).val() != 0) $("#newElementId").focus();
+    })
 
     // Remove element when X is clicked next to item details
     $(document).on('click', ".deleteItem", function(){
