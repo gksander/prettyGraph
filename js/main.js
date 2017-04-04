@@ -81,6 +81,7 @@ $(function(){ // On document ready -- Use this to set up web app
                         <i class="fa fa-question-circle" aria-hidden="true" data-message="Choose the distance between tick marks. If you set this to 2/2 there will be a major tick mark (and numerical label) every 2 units. The number of ticks in the X and Y direction do not have to match. Set these to 0 if you do not want <em>any</em> tick marks."></i>
                     </h4>
                     <input type="text" id="graphXTicksDistance" class="ticksDistance" size='8'> / <input type="text" id="graphYTicksDistance" class="ticksDistance" size='8'>
+                    <label><input type='checkbox' id='graphPiTicks'/>Pi Ticks</input></label>
                 </li>
                 <li>
                     <h4>
@@ -110,7 +111,7 @@ $(function(){ // On document ready -- Use this to set up web app
                             Axis Color: <input class='jscolor' id='graphAxesColor' value='000000'>
                         </li>
                         <li>
-                            Label Size: <input id='graphLabelFontSize' type='text' size='8'/> 
+                            Label Size: <input id='graphLabelFontSize' type='text' size='8'/>
                         </li>
                     </ul>
                 </li>

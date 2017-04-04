@@ -31,6 +31,7 @@ PG.setDefaults = function(vars){
         'xLabel' : vars.xLabel ? vars.xLabel : '$x$',
         'yLabel' : vars.yLabel ? vars.yLabel : '$y$',
         'ticksDistance' : vars.ticksDistance ? vars.ticksDistance : [1, 1],
+        'piTicks': vars.piTicks ? vars.piTicks : false,
         'minorTicks' : vars.minorTicks ? vars.minorTicks : [1, 1],
         'globalFontSize': vars.globalFontSize ? vars.globalFontSize : 20,
         'axesThickness': vars.axesThickness ? vars.axesThickness : 2,
@@ -65,10 +66,6 @@ PG.getConstruction = function(cons){
  ----- Start Construction ---------
  ------------------------------------ */
 PG.loadConstruction = function(cons){
-    // Load construction list
-    try{
-        JXG.JSXGraph.freeBoard(PG.board);
-    } catch(err){}
 
 
     $("#PGconstructionName").val(cons != 0 ? cons : '');
@@ -84,6 +81,8 @@ PG.loadConstruction = function(cons){
     // Ticks Distance
     $("#graphXTicksDistance").val(PG.vars.ticksDistance[0]);
     $("#graphYTicksDistance").val(PG.vars.ticksDistance[1]);
+    // Pi Ticks
+    $("#graphPiTicks").attr('checked', PG.vars.piTicks);
     // MinorTicks
     $("#graphXMinorTicks").val(PG.vars.minorTicks[0]);
     $("#graphYMinorTicks").val(PG.vars.minorTicks[1]);
@@ -102,8 +101,6 @@ PG.loadConstruction = function(cons){
     $("#graphLabelFontSize").val(PG.vars.labelFontSize);
 
     PG.initBoard();
-    PG.pullStoredElements();
-    PG.registerBoxEvents();
 }
 
 
@@ -239,7 +236,11 @@ PG.modalMessage = function(head, message) {
     Initialize Board
 ------------------------ */
 PG.initBoard = function(){
-    // Get some variables
+    // Clear board if possible
+    try{
+        $("#box").empty();
+        JXG.JSXGraph.freeBoard(PG.board);
+    } catch(err){}
 
     // Set width/height of box
     $("#box").css({
@@ -265,6 +266,7 @@ PG.initBoard = function(){
     // Build x-axis, strip ticks, re-define ticks
     // TODO: EVENTUALLY NEED TO BUILD PI-TICKS INTO THIS AS AN OPTION
     // console.llog(PG.vars.showAxes)
+
     PG.tmp.xaxis = PG.board.create('axis', [[0,0], [1,0]], {
         strokeColor: PG.vars.axesColor ? "#"+PG.vars.axesColor : "#000000",
         strokeWidth: PG.vars.axesThickness ? PG.vars.axesThickness : 2,
@@ -280,11 +282,11 @@ PG.initBoard = function(){
             anchorY: 'bottom',
             fontSize: PG.vars.labelFontSize
         },
-        // visible: PG.vars.showXAxis == 1 ? true : false
-        // drawZero: PG.vars.showXAxis == 1 ? true : false
 
     });
     PG.tmp.xaxis.removeAllTicks();
+
+
     PG.tmp.xAxisTicks = PG.board.create('ticks', [PG.tmp.xaxis], {
       ticksDistance: PG.vars.ticksDistance[0],
       strokeColor: 'rgba(150,150,150,0.85)',
@@ -301,7 +303,10 @@ PG.initBoard = function(){
       },
       minorTicks: PG.vars.minorTicks[0],
     //   visible: PG.vars.showXAxis == 1 ? true : false,
-      drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1
+      drawZero: PG.vars.showYAxis == 0 && PG.vars.showXAxis == 1,
+      scale: PG.vars.piTicks ? Math.PI : 1,
+      scaleSymbol: PG.vars.piTicks ? "&pi;" : "",
+    //   labels: ['hey', 'girl', 'hey']
     });
     if (PG.vars.showXAxis === 0){
         PG.tmp.xaxis.setAttribute({visible: false});
@@ -347,6 +352,9 @@ PG.initBoard = function(){
     if (PG.vars.showYAxis === 0){
         PG.tmp.yaxis.setAttribute({visible: false});
     }
+
+    PG.pullStoredElements();
+    PG.registerBoxEvents();
 }
 
 

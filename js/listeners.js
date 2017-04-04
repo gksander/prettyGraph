@@ -148,6 +148,13 @@ $(function(){
         }
     });
 
+    $("#graphPiTicks").on('change', function(){
+        var v = $(this).is(':checked');
+        PG.vars.piTicks = v;
+        // Rebuild board using pi ticks
+        PG.initBoard();
+    });
+
     // Change MinorTicks
     $(".graphMinorTicks").on('change', function(){
         var xMinorTicks = parseFloat($("#graphXMinorTicks").val()),
