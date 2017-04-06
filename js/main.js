@@ -125,6 +125,22 @@ $(function(){ // On document ready -- Use this to set up web app
                         <li>Show y-axes: <input type="range" id="graphShowYAxis" min='0' max='1' value='1' class='short-range'></li>
                     </ul>
                 </li>
+                <li>
+                    <h4>
+                        Dynamic Parameter
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="..."></i>
+                    </h4>
+                    <ul>
+                        <li>
+                            n = <input type='text' size='8' id='parameterN'/>
+                            <button type='button' id='playN'>Play</button>
+                        </li>
+                        <li>Min = <input type='text' size='8' id='parameterN_min'/></li>
+                        <li>Max = <input type='text' size='8' id='parameterN_max'/></li>
+                        <li>Step = <input type='text' size='8' id='parameterN_step'/></li>
+                        <li>Duration = <input type='text' size='8' id='parameterN_duration'/></li>
+                    </ul>
+                </li>
                 <!-- <li>
                     <h4>
                         Global Font Size

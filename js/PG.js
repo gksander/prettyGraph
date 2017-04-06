@@ -1,26 +1,18 @@
 // Variable to namespace prettyGraph functions
 var PG = {
     tmp: {},
-    // CHeck for stored variables, otherwise set some defaults
-    default_vars: {
-        'boardWidth': 450,
-        'boardHeight': 450,
-        'bounds': [-5, 5, -5, 5],
-        'xLabel' : '$x$',
-        'yLabel' : '$y$',
-        'ticksDistance' : [1, 1],
-        'minorTicks' : [1, 1],
-        'globalFontSize': 20,
-        'axesThickness': 2,
-        'axesColor': "000000",
-        'showXAxis' : 1,
-        'showYAxis': 1,
-        'labelFontSize': 20
-    },
     board: "",
     els: {},
-    currentConstruction: ""
+    currentConstruction: "",
+    nInterval: null
 };
+PG.setN = function(newval){
+    PG.vars.n = newval;
+    $("#parameterN").val(PG.vars.n);
+    try {
+        PG.board.update();
+    } catch (err){console.log(err);}
+}
 
 
 PG.setDefaults = function(vars){
@@ -38,7 +30,12 @@ PG.setDefaults = function(vars){
         'axesColor': vars.axesColor ? vars.axesColor : "000000",
         'showXAxis' : vars.showXAxis!==null ? vars.showXAxis : 1,
         'showYAxis': vars.showYAxis!==null ? vars.showYAxis : 1,
-        'labelFontSize': vars.labelFontSize ? vars.labelFontSize : 20
+        'labelFontSize': vars.labelFontSize ? vars.labelFontSize : 20,
+        'n': vars.n!==undefined ? vars.n : 1,
+        'nMin': vars.nMin!==undefined ? vars.nMin : -5,
+        'nMax': vars.nMax!==undefined ? vars.nMax : 5,
+        'nStep': vars.nStep!==undefined ? vars.nStep : 0.1,
+        'nDuration': vars.nDuration!==undefined ? vars.nDuration : 5,
     };
 }
 
@@ -66,6 +63,8 @@ PG.getConstruction = function(cons){
  ----- Start Construction ---------
  ------------------------------------ */
 PG.loadConstruction = function(cons){
+
+    // PG.getConstruction();
 
 
     $("#PGconstructionName").val(cons != 0 ? cons : '');
@@ -99,6 +98,11 @@ PG.loadConstruction = function(cons){
     // Global FontSize
     // $("#graphFontSize").val(PG.vars.globalFontSize);
     $("#graphLabelFontSize").val(PG.vars.labelFontSize);
+    $("#parameterN").val(PG.vars.n);
+    $("#parameterN_min").val(PG.vars.nMin);
+    $("#parameterN_max").val(PG.vars.nMax);
+    $("#parameterN_step").val(PG.vars.nStep);
+    $("#parameterN_duration").val(PG.vars.nDuration);
 
     PG.initBoard();
 }
@@ -241,6 +245,7 @@ PG.initBoard = function(){
         $("#box").empty();
         JXG.JSXGraph.freeBoard(PG.board);
     } catch(err){}
+    // PG.loadConstructionList();
 
     // Set width/height of box
     $("#box").css({
@@ -621,13 +626,13 @@ PG.generateElementTitle = function(type, id){
             break;
         case "Line (Segment)":
             msg = `
-            <p>This line passes through the Starting and Ending locations. If you have defined a point, you can take the ID of the point and pass it as a starting or ending location of the line.</p>
+            <p>This line passes through the Starting and Ending locations.</p>
             <p>By default, a line segment is formed. Use the &quot;Ending&quot; slider to turn the segment into a ray or a line.</p>
             `;
             break;
         case "Circle":
             msg = `
-            This defines a circle with a specified center and radius. The center of the circle can be previously defined point (just pass the ID of the point as the Center of the circle).
+            This defines a circle with a specified center and radius.
             `;
             break;
         case "Inequality":
@@ -640,6 +645,7 @@ PG.generateElementTitle = function(type, id){
             This creates text at the given location. You can use LaTeX notation using $'s, such as $-\\frac{b}{2a}$.
             `;
             break;
+
     }
 
     return `
@@ -660,6 +666,9 @@ PG.generateElementTitle = function(type, id){
 PG.buildBoardElement = function(ops){
     var id = ops.id;
     try {
+        PG.board.removeObject(PG.tmp[id])
+    } catch(err){};
+    try {
     // Build based on element type
     switch (ops.type){
         case "functiongraph":
@@ -674,11 +683,15 @@ PG.buildBoardElement = function(ops){
             };
             PG.tmp[id] = PG.board.create('functiongraph', [
                 (x) => {
-                    return math.eval(ops.funcdef, {x:x});
+                    return math.eval(ops.funcdef, {x:x, n:PG.vars.n});
                     // with (Math) return = mathjs(ops.funcdef, {x:x});
                 },
-                ops.lowerBound ? math.eval(ops.lowerBound) : null,
-                ops.upperBound ? math.eval(ops.upperBound) : null
+                ops.lowerBound ? function(){
+                    return math.eval(ops.lowerBound, {n:PG.vars.n});
+                } : null,
+                ops.upperBound ? function(){
+                    return math.eval(ops.upperBound, {n:PG.vars.n});
+                } : null
             ], ats)
 
             break;
@@ -686,10 +699,14 @@ PG.buildBoardElement = function(ops){
         case "curve":
 
             PG.tmp[id] = PG.board.create("curve", [
-                (x) => {return math.eval(ops.x, {t:x});},
-                (x) => {return math.eval(ops.y, {t:x});},
-                math.eval(ops.lowerBound),
-                math.eval(ops.upperBound)
+                (x) => {return math.eval(ops.x, {t:x, n: PG.vars.n});},
+                (x) => {return math.eval(ops.y, {t:x, n: PG.vars.n});},
+                function(){
+                    return math.eval(ops.lowerBound, {n:PG.vars.n});
+                },
+                function(){
+                    return math.eval(ops.upperBound, {n:PG.vars.n});
+                }
             ], {
                 fixed: true,
                 highlight: false,
@@ -704,8 +721,8 @@ PG.buildBoardElement = function(ops){
             var loc = PG.pointToArray(PG.els[id].loc);
 
             PG.tmp[ops.id] = PG.board.create('point', [
-                math.eval(loc[0]),
-                math.eval(loc[1])
+                function(){return math.eval(loc[0], {n:parseFloat(PG.vars.n)});},
+                function(){return math.eval(loc[1], {n:parseFloat(PG.vars.n)});}
             ], {
                 fixed: false,
                 name: ops.name ? ops.name : '',
@@ -737,35 +754,27 @@ PG.buildBoardElement = function(ops){
                 lastArrow: (ops.arrow == 1 || ops.arrow == 3)
             };
 
-
-            if (ops.startLoc.indexOf("(") > -1){
-                var s = PG.pointToArray(ops.startLoc);
-                var start = [math.eval(s[0]), math.eval(s[1])];
-            } else {
-                var start = PG.tmp[ops.startLoc];
-            }
-            if (ops.endLoc.indexOf("(") > -1){
-                var e = PG.pointToArray(ops.endLoc);
-                var end = [math.eval(e[0]), math.eval(e[1])];
-            } else {
-                var end = PG.tmp[ops.endLoc];
-            }
+            var s = PG.pointToArray(ops.startLoc);
+            var e = PG.pointToArray(ops.endLoc);
             //
-            PG.tmp[id] = PG.board.create('line', [start, end], ats);
+            PG.tmp[id] = PG.board.create('line', [
+                function(){return [math.eval(s[0], {n:PG.vars.n}), math.eval(s[1], {n:PG.vars.n})]},
+                function(){return [math.eval(e[0], {n:PG.vars.n}), math.eval(e[1], {n:PG.vars.n})]},
+            ], ats);
             // Rig up event listener
-            PG.tmp[id].on('drag', function(){
-                var startX = PG.board.objects[this.parents[0]].X(),
-                    startY = PG.board.objects[this.parents[0]].Y(),
-                    endX = PG.board.objects[this.parents[1]].X(),
-                    endY = PG.board.objects[this.parents[1]].Y();
-                var startLoc = `(${startX.toFixed(2)}, ${startY.toFixed(2)})`,
-                    endLoc = `(${endX.toFixed(2)}, ${endY.toFixed(2)})`;
-
-                PG.els[id].startLoc = startLoc;
-                PG.els[id].endLoc = endLoc;
-                $(`li#${id}`).find(".element_segmentStartLoc").val(startLoc);
-                $(`li#${id}`).find(".element_segmentEndLoc").val(endLoc);
-            });
+            // PG.tmp[id].on('drag', function(){
+            //     var startX = PG.board.objects[this.parents[0]].X(),
+            //         startY = PG.board.objects[this.parents[0]].Y(),
+            //         endX = PG.board.objects[this.parents[1]].X(),
+            //         endY = PG.board.objects[this.parents[1]].Y();
+            //     var startLoc = `(${startX.toFixed(2)}, ${startY.toFixed(2)})`,
+            //         endLoc = `(${endX.toFixed(2)}, ${endY.toFixed(2)})`;
+            //
+            //     PG.els[id].startLoc = startLoc;
+            //     PG.els[id].endLoc = endLoc;
+            //     $(`li#${id}`).find(".element_segmentStartLoc").val(startLoc);
+            //     $(`li#${id}`).find(".element_segmentEndLoc").val(endLoc);
+            // });
             break;
 
         case "text":
@@ -777,29 +786,30 @@ PG.buildBoardElement = function(ops){
                 color: "#" + ops.color,
                 useMathJax: true
             };
+            var loc = PG.pointToArray(ops.loc);
+            if (ops.loc.indexOf("n") == -1){
 
-            if (ops.loc.indexOf("(") > -1){
-                var loc = PG.pointToArray(ops.loc);
                 PG.tmp[id] = PG.board.create('text', [
                     math.eval(loc[0]),
                     math.eval(loc[1]),
                     () => {return ops.text;}
                 ], ats);
+                // Rig up event listener
+                PG.tmp[id].on('drag', function(){
+                    var x = this.X(),
+                        y = this.Y();
+                    var loc = `(${x}, ${y})`;
+                    $(`li#${id}`).find(".element_textLoc").val(loc);
+                    PG.els[id].loc = loc;
+                });
             } else {
                 PG.tmp[id] = PG.board.create('text', [
-                    ()=>{return PG.tmp[ops.loc].X()},
-                    ()=>{return PG.tmp[ops.loc].Y()},
+                    ()=>{return math.eval(loc[0], {n:PG.vars.n})},
+                    ()=>{return math.eval(loc[1], {n:PG.vars.n})},
                     () => {return ops.text;}
                 ], ats);
             }
-            // Rig up event listener
-            PG.tmp[id].on('drag', function(){
-                var x = this.X(),
-                    y = this.Y();
-                var loc = `(${x}, ${y})`;
-                $(`li#${id}`).find(".element_textLoc").val(loc);
-                PG.els[id].loc = loc;
-            });
+
             break;
 
         case "circle":
@@ -813,15 +823,19 @@ PG.buildBoardElement = function(ops){
                 dash: ops.dash
             };
 
-            if (ops.loc.indexOf("(") > -1){
-                var s = PG.pointToArray(ops.loc);
-                var start = [math.eval(s[0]), math.eval(s[1])];
-            } else {
-                var start = PG.tmp[ops.loc]
-            }
+            // if (ops.loc.indexOf("n") == -1){
+            //     var s = PG.pointToArray(ops.loc);
+            //     var start = [math.eval(s[0]), math.eval(s[1])];
+            // } else {
+            //     var start = PG.tmp[ops.loc]
+            // }
 
-
-            PG.tmp[id] = PG.board.create('circle', [start, math.eval(ops.r)], ats);
+            var s = PG.pointToArray(ops.loc);
+            PG.tmp[id] = PG.board.create('circle', [
+                [function(){return math.eval(s[0], {n:PG.vars.n});},
+                function(){return math.eval(s[1], {n:PG.vars.n})}],
+                function(){return math.eval(ops.r, {n:PG.vars.n});}
+            ], ats);
             break;
 
         case "inequality":
@@ -835,6 +849,7 @@ PG.buildBoardElement = function(ops){
             PG.tmp[id] = PG.board.create('inequality', [PG.tmp[ops.line]], ats);
 
             break;
+
     }
 
     }catch (err){}

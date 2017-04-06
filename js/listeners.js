@@ -18,6 +18,11 @@ $(function(){
             case 'd':
                 event.preventDefault();
                 PG.deleteConstruction();
+                break;
+            case 'p':
+                event.preventDefault();
+                $("#playN").trigger('click');
+
             }
         }
     });
@@ -246,6 +251,47 @@ $(function(){
         PG.tmp.yAxisTicks.setAttribute({label: yatl});
     });
 
+    /* ---------------------------------------------
+    ------ Parameter N   --------------------
+    ---------------------------------------------- */
+
+    // Change Listeners
+    $("#parameterN").on('change', function(){
+        PG.setN(math.eval($(this).val()));
+    });
+    $("#parameterN_min").on('change', function(){
+        PG.vars.nMin = math.eval($(this).val());
+    });
+    $("#parameterN_max").on('change', function(){
+        PG.vars.nMax = math.eval($(this).val());
+    });
+    $("#parameterN_step").on('change', function(){
+        PG.vars.nStep = math.eval($(this).val());
+    });
+    $("#parameterN_duration").on('change', function(){
+        PG.vars.nDuration = math.eval($(this).val());
+    });
+
+    // When play button is pressed
+    $("#playN").on('click', function(){
+        // Clear timeout if need be
+        try{clearInterval(PG.nInterval)}catch(err){};
+        var min = math.eval(PG.vars.nMin),
+            max = math.eval(PG.vars.nMax),
+            dur = 1000*parseFloat(PG.vars.nDuration),
+            step = parseFloat(PG.vars.nStep);
+
+        // Set cuurent n to min value
+        PG.setN(PG.vars.nMin);
+        PG.nInterval = setInterval(function(){
+            PG.setN(parseFloat(PG.vars.n) + step);
+            if (parseFloat(PG.vars.n) > max - step){
+                clearInterval(PG.nInterval);
+                PG.setN(max);
+            }
+        }, dur/((max-min)/step));
+    });
+
 
     /* ---------------------------------------------
     ------ Adding/Dropping/Saving --------------------
@@ -309,8 +355,9 @@ $(function(){
         PG.els[id].loc = $(this).val();
         var locA = PG.pointToArray($(this).val());
 
-        PG.tmp[id].setPosition(JXG.COORDS_BY_USER, [math.eval(locA[0]), math.eval(locA[1])]);
-        PG.board.update();
+        // PG.tmp[id].setPosition(JXG.COORDS_BY_USER, [math.eval(locA[0]), math.eval(locA[1])]);
+        PG.buildBoardElement(PG.els[id]);
+        // PG.board.update();
     });
 
     // When Segment Coordinates are changed
@@ -374,7 +421,7 @@ $(function(){
         var id = $(this).closest('li.elementItem').attr('id');
         PG.els[id].loc = $(this).val();
 
-        PG.board.removeObject(PG.tmp[id]);
+        // PG.board.removeObject(PG.tmp[id]);
         PG.buildBoardElement(PG.els[id]);
         PG.board.update();
     });
@@ -534,6 +581,9 @@ $(function(){
         PG.els[id].visible = visible;
         PG.tmp[id].setAttribute({visible: visible==0 ? false : true});
     });
+
+
+    // element_sliderMin
 
 
 
