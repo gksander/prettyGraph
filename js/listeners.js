@@ -436,6 +436,28 @@ $(function(){
         PG.board.update();
     });
 
+    // When anchorX is changed
+    $("#elementList").on("input", '.element_anchorX', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var val = $(this).val();
+        PG.els[id].anchorX = val;
+
+        PG.tmp[id].setAttribute({
+            anchorX: val == -1 ? 'right' : (val == 0 ? 'middle' : 'left')
+        });
+    });
+
+    // When anchorY is changed
+    $("#elementList").on("input", '.element_anchorY', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var val = $(this).val();
+        PG.els[id].anchorY = val;
+
+        PG.tmp[id].setAttribute({
+            anchorY: val == -1 ? 'top' : (val == 0 ? 'middle' : 'bottom')
+        });
+    });
+
     // When Circle position is changed
     $("#elementList").on("change", '.element_circleLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');

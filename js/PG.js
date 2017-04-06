@@ -557,6 +557,8 @@ PG.buildElementHtml = function(ops){
                         <li>${PG.buildAestheticComponent('fontSize', {fontSize: ops.fontSize})}</li>
                         <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
                         <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
+                        <li>${PG.buildAestheticComponent('anchorX', {anchorX: ops.anchorX})}</li>
+                        <li>${PG.buildAestheticComponent('anchorY', {anchorY: ops.anchorY})}</li>
                     </ul>
                 </li>
             `;
@@ -918,6 +920,18 @@ PG.buildAestheticComponent = function(type, ops){
         case "fontSize":
             return `
                 Font Size: <input class='element_fontSize' type='text' size='8' value='${ops.fontSize ? ops.fontSize : 18}'/>
+            `;
+            break;
+
+        case "anchorX":
+            return `
+                Anchor (X): <input class='element_anchorX short-range' type='range' min='-1' max='1' step='1' value='${ops.anchorX!==undefined ? ops.anchorX : 0}'/>
+            `;
+            break;
+
+        case "anchorY":
+            return `
+                Anchor (Y): <input class='element_anchorY short-range' type='range' min='-1' max='1' step='1' value='${ops.anchorY!==undefined ? ops.anchorY : 0}'/>
             `;
             break;
 
