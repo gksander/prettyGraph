@@ -4,7 +4,11 @@ var PG = {
     board: "",
     els: {},
     currentConstruction: "",
-    nInterval: null
+    nInterval: null,
+    getMathScope: function(){
+        var bb = PG.board.getBoundingBox();
+        return {n: PG.vars.n, xi: bb[0], xf: bb[2], yi: bb[3], yf: bb[1]};
+    }
 };
 PG.setN = function(newval){
     PG.vars.n = newval;
@@ -460,6 +464,13 @@ PG.addNewElement = function(){
             PG.els[id].fillOpacity = 0;
             PG.els[id].dash = 0;
             break;
+        case "polygon":
+            PG.els[id].loc = ["(1,1)", "(xf, 1)", "(0, yf)"];
+            PG.els[id].strokeWidth = 2;
+            PG.els[id].strokeColor = "000000";
+            PG.els[id].fillColor = "FFFFFF";
+            PG.els[id].fillOpacity = 0;
+            break;
         case "inequality":
             PG.els[id].line = "";
             PG.els[id].inverse = false;
@@ -581,6 +592,37 @@ PG.buildElementHtml = function(ops){
             `;
             break;
 
+        case "polygon":
+            var os = `
+                <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
+                    ${PG.generateElementTitle('Polygon', ops.id)}
+                        <li>Points: <ul>
+            `;
+
+            for (var i in ops.loc){
+                os += `
+                <li>
+                    <input type='text' size='8' value='${ops.loc[i]}' class='element_polygonPoint'/>
+                    <i class='fa fa-times deletePolygonPoint' aria-hidden='true'></i>
+                </li>
+                `;
+            }
+
+            os += `
+                    <li><button type='button' class='polygonAddPoint'>Add Point</button></li>
+                </ul>
+            </li>`;
+
+            os += `
+                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
+                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
+                        <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
+                        <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
+                    </ul>
+                </li>
+            `;
+            break;
+
         case "inequality":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
@@ -637,6 +679,18 @@ PG.generateElementTitle = function(type, id){
             This defines a circle with a specified center and radius.
             `;
             break;
+        case "Polygon":
+            msg = `
+            <p>This defines a polygon. The order of the points in the list will be the order of the points when the polygon is drawn. You may use the following additional variables:</p>
+            <ul>
+                <li>n for the dynamic variable n</li>
+                <li>xi for the x-value of the left-side of the board</li>
+                <li>xf for the x-value of the right-side of the board</li>
+                <li>yi for the y-value of the bottom of the board</li>
+                <li>yf for the y-value of the top of the board</li>
+            </ul>
+            `;
+            break;
         case "Inequality":
             msg = `
             This defines an &quot;inequality.&quot; Pass the ID of a previously defined line to the Line property, and the graph will be shaded below the line. Use the &quot;Inverse&quot; checkbox to shade above the line.
@@ -689,10 +743,10 @@ PG.buildBoardElement = function(ops){
                     // with (Math) return = mathjs(ops.funcdef, {x:x});
                 },
                 ops.lowerBound ? function(){
-                    return math.eval(ops.lowerBound, {n:PG.vars.n});
+                    return math.eval(ops.lowerBound, PG.getMathScope());
                 } : null,
                 ops.upperBound ? function(){
-                    return math.eval(ops.upperBound, {n:PG.vars.n});
+                    return math.eval(ops.upperBound, PG.getMathScope());
                 } : null
             ], ats)
 
@@ -704,10 +758,10 @@ PG.buildBoardElement = function(ops){
                 (x) => {return math.eval(ops.x, {t:x, n: PG.vars.n});},
                 (x) => {return math.eval(ops.y, {t:x, n: PG.vars.n});},
                 function(){
-                    return math.eval(ops.lowerBound, {n:PG.vars.n});
+                    return math.eval(ops.lowerBound, PG.getMathScope());
                 },
                 function(){
-                    return math.eval(ops.upperBound, {n:PG.vars.n});
+                    return math.eval(ops.upperBound, PG.getMathScope());
                 }
             ], {
                 fixed: true,
@@ -723,8 +777,8 @@ PG.buildBoardElement = function(ops){
             var loc = PG.pointToArray(PG.els[id].loc);
 
             PG.tmp[ops.id] = PG.board.create('point', [
-                function(){return math.eval(loc[0], {n:parseFloat(PG.vars.n)});},
-                function(){return math.eval(loc[1], {n:parseFloat(PG.vars.n)});}
+                function(){return math.eval(loc[0], PG.getMathScope());},
+                function(){return math.eval(loc[1], PG.getMathScope());}
             ], {
                 fixed: false,
                 name: ops.name ? ops.name : '',
@@ -760,8 +814,8 @@ PG.buildBoardElement = function(ops){
             var e = PG.pointToArray(ops.endLoc);
             //
             PG.tmp[id] = PG.board.create('line', [
-                function(){return [math.eval(s[0], {n:PG.vars.n}), math.eval(s[1], {n:PG.vars.n})]},
-                function(){return [math.eval(e[0], {n:PG.vars.n}), math.eval(e[1], {n:PG.vars.n})]},
+                function(){return [math.eval(s[0], PG.getMathScope()), math.eval(s[1], PG.getMathScope())]},
+                function(){return [math.eval(e[0], PG.getMathScope()), math.eval(e[1], PG.getMathScope())]},
             ], ats);
             // Rig up event listener
             // PG.tmp[id].on('drag', function(){
@@ -789,7 +843,7 @@ PG.buildBoardElement = function(ops){
                 useMathJax: true
             };
             var loc = PG.pointToArray(ops.loc);
-            if (ops.loc.indexOf("n") == -1){
+            if (ops.loc.indexOf("n") == -1 && ops.loc.indexOf("x") == -1){
 
                 PG.tmp[id] = PG.board.create('text', [
                     math.eval(loc[0]),
@@ -806,8 +860,8 @@ PG.buildBoardElement = function(ops){
                 });
             } else {
                 PG.tmp[id] = PG.board.create('text', [
-                    ()=>{return math.eval(loc[0], {n:PG.vars.n})},
-                    ()=>{return math.eval(loc[1], {n:PG.vars.n})},
+                    ()=>{return math.eval(loc[0], PG.getMathScope())},
+                    ()=>{return math.eval(loc[1], PG.getMathScope())},
                     () => {return ops.text;}
                 ], ats);
             }
@@ -825,19 +879,41 @@ PG.buildBoardElement = function(ops){
                 dash: ops.dash
             };
 
-            // if (ops.loc.indexOf("n") == -1){
-            //     var s = PG.pointToArray(ops.loc);
-            //     var start = [math.eval(s[0]), math.eval(s[1])];
-            // } else {
-            //     var start = PG.tmp[ops.loc]
-            // }
 
             var s = PG.pointToArray(ops.loc);
             PG.tmp[id] = PG.board.create('circle', [
-                [function(){return math.eval(s[0], {n:PG.vars.n});},
-                function(){return math.eval(s[1], {n:PG.vars.n})}],
-                function(){return math.eval(ops.r, {n:PG.vars.n});}
+                [function(){return math.eval(s[0], PG.getMathScope());},
+                function(){return math.eval(s[1], PG.getMathScope())}],
+                function(){return math.eval(ops.r, PG.getMathScope());}
             ], ats);
+            break;
+
+        case "polygon":
+
+            var ps = [];
+            for (let i=0; i < ops.loc.length; i++){
+                let p = ops.loc[parseInt(i)].substr(0);
+                p = PG.pointToArray(p);
+                ps.push(function(){
+                    return [math.eval(p[0], PG.getMathScope()), math.eval(p[1], PG.getMathScope())];
+                });
+
+            };
+
+            PG.tmp[id] = PG.board.create('polygon', ps, {
+                fixed: true,
+                highlight:false,
+                vertices: {visible: false}, // NEED TO ADJUST THIS
+                borders: {
+                    fixed: true,
+                    highlight:false,
+                    strokeWidth: ops.strokeWidth,
+                    strokeColor: "#"+ops.strokeColor
+                },
+                fillColor: "#"+ops.fillColor,
+                fillOpacity: ops.fillOpacity
+            });
+
             break;
 
         case "inequality":

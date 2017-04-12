@@ -478,6 +478,58 @@ $(function(){
         PG.board.update();
     });
 
+    // POLYGON LISTENERS
+    // When point is changed
+    $("#elementList").on("change", '.element_polygonPoint', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        // Which element it is
+        var n = $(this).closest('ul').find('.element_polygonPoint').index($(this));
+        PG.els[id].loc[n] = $(this).val();
+
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+    });
+
+    // Add point
+    $("#elementList").on("click", '.polygonAddPoint', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        var defaultLoc = "(0,0)";
+
+        // Append to UI
+        $(this).closest('ul').find('li').last().before(`
+            <li>
+                <input type='text' size='8' value='${defaultLoc}' class='element_polygonPoint'/>
+                <i class='fa fa-times deletePolygonPoint' aria-hidden='true'></i>
+            </li>
+        `);
+
+        // Append to PG.els
+        PG.els[id].loc.push(defaultLoc);
+        // Rebuild board element
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+    });
+
+    // Destroy Point
+    $("#elementList").on("click", '.deletePolygonPoint', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        // Which element is it? This is sloppy, could probably better write this.
+        var n = $(this).closest('ul').find(`.deletePolygonPoint`).index($(this));
+
+        // Remove element from UI
+        $(this).closest('ul').find(`li:nth-child(${n+1})`).remove();
+        // Remove from PG.els
+        PG.els[id].loc.splice(n,1);
+        // Rebuild board element
+        PG.board.removeObject(PG.tmp[id]);
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+
+    });
+
+
     // WHEN INEQUALITY LINE IS CHANGED
     $("#elementList").on("change", ".element_ineqLine", function(){
         var id = $(this).closest('li.elementItem').attr('id');
@@ -531,6 +583,13 @@ $(function(){
         var color = $(this).val();
         PG.els[id].strokeColor = color;
         PG.tmp[id].setAttribute({strokeColor: `#${color}`});
+
+        var borders = PG.tmp[id].borders;
+        if (borders) {
+            for (var i in borders){
+                borders[i].setAttribute({strokeColor: `#${color}`});
+            }
+        }
     });
 
     // WHEN FILL COLOR INPUT IS CHANGEd
@@ -556,6 +615,13 @@ $(function(){
         var strokeWidth = $(this).val();
         PG.els[id].strokeWidth = strokeWidth;
         PG.tmp[id].setAttribute({strokeWidth: strokeWidth});
+
+        var borders = PG.tmp[id].borders;
+        if (borders) {
+            for (var i in borders){
+                borders[i].setAttribute({strokeWidth: strokeWidth});
+            }
+        }
     });
 
     // WHEN DASH IS CHANGEd

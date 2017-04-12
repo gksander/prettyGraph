@@ -169,6 +169,7 @@ $(function(){ // On document ready -- Use this to set up web app
                         <option value='point'>Point</option>
                         <option value="line">Line</option>
                         <option value="circle">Circle</option>
+                        <option value="polygon">Polygon</option>
                         <option value="inequality">Inequality</option>
                     </select>
                     with ID: <input type='text' id='newElementId' size='8'/>
