@@ -34,7 +34,7 @@ PG.setDefaults = function(vars){
         'axesColor': vars.axesColor ? vars.axesColor : "000000",
         'showXAxis' : vars.showXAxis!==null ? vars.showXAxis : 1,
         'showYAxis': vars.showYAxis!==null ? vars.showYAxis : 1,
-        'labelFontSize': vars.labelFontSize ? vars.labelFontSize : 20,
+        'labelFontSize': vars.labelFontSize ? vars.labelFontSize : 22,
         'n': vars.n!==undefined ? vars.n : 1,
         'nMin': vars.nMin!==undefined ? vars.nMin : -5,
         'nMax': vars.nMax!==undefined ? vars.nMax : 5,
@@ -453,7 +453,7 @@ PG.addNewElement = function(){
             PG.els[id].fontSize = PG.vars.globalFontSize;
             PG.els[id].anchorX = 0;
             PG.els[id].anchorY = 0;
-            PG.els[id].color = '161DFF';
+            PG.els[id].color = '0000FF';
             break;
         case "circle":
             PG.els[id].loc = "(0,0)";
@@ -971,7 +971,7 @@ PG.buildAestheticComponent = function(type, ops){
 
         case "strokeWidth":
             return `
-                Stroke Width: <input class='element_strokeWidth long-range' type='range' min='1' max='7' step='1' value='${ops.strokeWidth ? ops.strokeWidth : 3}'/>
+                Stroke Width: <input class='element_strokeWidth long-range' type='range' min='0' max='7' step='1' value='${ops.strokeWidth ? ops.strokeWidth : 3}'/>
             `;
             break;
 
