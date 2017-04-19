@@ -698,7 +698,12 @@ PG.generateElementTitle = function(type, id){
             break;
         case "Text":
             msg = `
-            This creates text at the given location. You can use LaTeX notation using $'s, such as $-\\frac{b}{2a}$.
+            <p>
+                This creates text at the given location. You can use LaTeX notation using $'s, such as $-\\frac{b}{2a}$. Or, ASCIIMath notation using backticks, like \`(Delta y)/(Delta x)\`.
+            </p>
+            <p>
+                You make computations by adding \${...}# in your string where ... is a computation and # is the number of digits to round to. For example, \${n/2}3 will compute n/2 and round to 3 decimal places and update as n varies.
+            </p>
             `;
             break;
 
@@ -818,19 +823,7 @@ PG.buildBoardElement = function(ops){
                 function(){return [math.eval(e[0], PG.getMathScope()), math.eval(e[1], PG.getMathScope())]},
             ], ats);
             // Rig up event listener
-            // PG.tmp[id].on('drag', function(){
-            //     var startX = PG.board.objects[this.parents[0]].X(),
-            //         startY = PG.board.objects[this.parents[0]].Y(),
-            //         endX = PG.board.objects[this.parents[1]].X(),
-            //         endY = PG.board.objects[this.parents[1]].Y();
-            //     var startLoc = `(${startX.toFixed(2)}, ${startY.toFixed(2)})`,
-            //         endLoc = `(${endX.toFixed(2)}, ${endY.toFixed(2)})`;
-            //
-            //     PG.els[id].startLoc = startLoc;
-            //     PG.els[id].endLoc = endLoc;
-            //     $(`li#${id}`).find(".element_segmentStartLoc").val(startLoc);
-            //     $(`li#${id}`).find(".element_segmentEndLoc").val(endLoc);
-            // });
+
             break;
 
         case "text":
@@ -842,13 +835,21 @@ PG.buildBoardElement = function(ops){
                 color: "#" + ops.color,
                 useMathJax: true
             };
+            var textF = function(){
+                var o = ops.text;
+                o = o.replace(/\$\{[^{}]+\}\d/g, function(x){
+                    // return math.eval("round("+x.substring(2, x.length - 2)+","+x.charAt(x.length-1)+")", PG.getMathScope());
+                    return math.eval(x.substring(2, x.length - 2), PG.getMathScope()).toFixed(x.charAt(x.length-1));
+                });
+                return o;
+            }
             var loc = PG.pointToArray(ops.loc);
             if (ops.loc.indexOf("n") == -1 && ops.loc.indexOf("x") == -1){
 
                 PG.tmp[id] = PG.board.create('text', [
                     math.eval(loc[0]),
                     math.eval(loc[1]),
-                    () => {return ops.text;}
+                    textF
                 ], ats);
                 // Rig up event listener
                 PG.tmp[id].on('drag', function(){
@@ -862,7 +863,7 @@ PG.buildBoardElement = function(ops){
                 PG.tmp[id] = PG.board.create('text', [
                     ()=>{return math.eval(loc[0], PG.getMathScope())},
                     ()=>{return math.eval(loc[1], PG.getMathScope())},
-                    () => {return ops.text;}
+                    textF
                 ], ats);
             }
 
