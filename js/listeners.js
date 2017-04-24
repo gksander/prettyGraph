@@ -349,6 +349,13 @@ $(function(){
             - bind to ul#elementList, delegate accordingly
     ------------------------ */
 
+    $("#elementList").on('change', '.element_declaration', function(){
+        var id = $(this).closest('li.elementItem').attr('id');
+        PG.els[id].declaration = $(this).val();
+        PG.buildBoardElement(PG.els[id]);
+        PG.board.update();
+    });
+
     // WHEN POINT COORDINATES ARE CHANGEd
     $("#elementList").on('change', '.element_pointLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');

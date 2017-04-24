@@ -5,10 +5,11 @@ var PG = {
     els: {},
     currentConstruction: "",
     nInterval: null,
-    getMathScope: function(){
-        var bb = PG.board.getBoundingBox();
-        return {n: PG.vars.n, xi: bb[0], xf: bb[2], yi: bb[3], yf: bb[1]};
-    }
+    // getMathScope: function(){
+    //     var bb = PG.board.getBoundingBox();
+    //     return {n: PG.vars.n, xi: bb[0], xf: bb[2], yi: bb[3], yf: bb[1]};
+    // },
+    parser: math.parser()
 };
 PG.setN = function(newval){
     PG.vars.n = newval;
@@ -58,6 +59,7 @@ PG.getConstruction = function(cons){
     }
 
     PG.tmp = {};
+    PG.parser.clear();
     $("#elementList").empty();
 
 }
@@ -198,10 +200,20 @@ PG.dropVars = function(){
 
 // Pull stored elements, generate the HTML and plot them
 PG.pullStoredElements = function(){
+    // Loop through Els and build declarations first, then everything else
+    var leftovers = [];
     for (var i in PG.els){
         var type = PG.els[i].type;
-        PG.buildElementHtml(PG.els[i]);
-        PG.buildBoardElement(PG.els[i]);
+        if (type == "declaration") {
+            PG.buildElementHtml(PG.els[i]);
+            PG.buildBoardElement(PG.els[i]);
+        } else {
+            leftovers.push(i);
+        }
+    }
+    for (var i in leftovers){
+        PG.buildElementHtml(PG.els[leftovers[i]]);
+        PG.buildBoardElement(PG.els[leftovers[i]]);
     }
 }
 
@@ -228,8 +240,17 @@ PG.modalMessage = function(head, message) {
     $("body").addClass("modal-shown");
 }
 
-
-
+PG.getMathScope = function(){
+    var bb = PG.board.getBoundingBox();
+    var o = {n: PG.vars.n, xi: bb[0], xf: bb[2], yi: bb[3], yf: bb[1]};
+    var parserObj = PG.parser.getAll();
+    for (var p in parserObj){
+        if (o[p] === undefined){
+            o[p] = parserObj[p];
+        }
+    }
+    return o;
+}
 
 
 
@@ -414,6 +435,9 @@ PG.addNewElement = function(){
     }
     // Set some defaults based on type
     switch (type){
+        case "declaration":
+            PG.els[id].declaration = "a = 3";
+            break;
         case "functiongraph":
             PG.els[id].funcdef = "x^2";
             PG.els[id].lowerBound = "";
@@ -490,12 +514,21 @@ PG.buildElementHtml = function(ops){
     // ${PG.els[ops.id].panelShown ? '' : "style='display:none'"}
     // Build HTML based on type
     switch (ops.type) {
+        case "declaration":
+            var os = `
+                <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
+                    ${PG.generateElementTitle('Declaration', ops.id)}
+                        <li>Declaration: <input type='text' class='element_declaration' value='${ops.declaration}' size='10'></li>
+                    </ul>
+                </li>
+            `;
+            break;
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Function Graph', ops.id)}
 
-                        <li>Func. Definition: <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
+                        <li>y= <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
                         <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
                         <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
@@ -618,6 +651,7 @@ PG.buildElementHtml = function(ops){
                         <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
                         <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
                         <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
+                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -647,6 +681,9 @@ PG.buildElementHtml = function(ops){
 PG.generateElementTitle = function(type, id){
     var msg = "...";
     switch (type){
+        case "Declaration":
+            msg = `Declare a variable or function to use in the construction. Examples are: "a = 3" or "f(x) = sin(x^2)". If you are definining, say, a point -- you can set its location to (2, f(2)).`;
+            break;
         case "Function Graph":
             msg = "Enter a function definition, such as x^2 or sin(x). You can change the lower and upper bound of the domain of the function. If you leave the lower/upper bound inputs empty, the domain of the function will be all possible values.";
             break;
@@ -732,6 +769,11 @@ PG.buildBoardElement = function(ops){
     try {
     // Build based on element type
     switch (ops.type){
+        case "declaration":
+            try {
+                PG.parser.eval(ops.declaration);
+            } catch(err){}
+            break;
         case "functiongraph":
             var ats = {
                 fixed: true,
@@ -744,8 +786,10 @@ PG.buildBoardElement = function(ops){
             };
             PG.tmp[id] = PG.board.create('functiongraph', [
                 (x) => {
-                    return math.eval(ops.funcdef, {x:x, n:PG.vars.n});
-                    // with (Math) return = mathjs(ops.funcdef, {x:x});
+                    var s = PG.getMathScope();
+                    s.x = x;
+                    return math.eval(ops.funcdef, s);
+                    // return PG.parser.eval(ops.funcdef)
                 },
                 ops.lowerBound ? function(){
                     return math.eval(ops.lowerBound, PG.getMathScope());
@@ -760,8 +804,16 @@ PG.buildBoardElement = function(ops){
         case "curve":
 
             PG.tmp[id] = PG.board.create("curve", [
-                (x) => {return math.eval(ops.x, {t:x, n: PG.vars.n});},
-                (x) => {return math.eval(ops.y, {t:x, n: PG.vars.n});},
+                (t) => {
+                    var s = PG.getMathScope();
+                    s.t = t;
+                    return math.eval(ops.x, s);
+                },
+                (t) => {
+                    var s = PG.getMathScope();
+                    s.t = t;
+                    return math.eval(ops.y, s);
+                },
                 function(){
                     return math.eval(ops.lowerBound, PG.getMathScope());
                 },

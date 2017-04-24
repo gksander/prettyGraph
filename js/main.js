@@ -163,6 +163,7 @@ $(function(){ // On document ready -- Use this to set up web app
                 <p id='newElementTypeContainer'>
                     <select name="newElementType" id="newElementType">
                         <option value="0">Choose one...</option>
+                        <option value="declaration">Declaration</option>
                         <option value='functiongraph'>Function Graph</option>
                         <option value='curve'>Curve</option>
                         <option value="text">Text</option>
