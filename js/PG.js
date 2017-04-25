@@ -41,6 +41,7 @@ PG.setDefaults = function(vars){
         'nMax': vars.nMax!==undefined ? vars.nMax : 5,
         'nStep': vars.nStep!==undefined ? vars.nStep : 0.1,
         'nDuration': vars.nDuration!==undefined ? vars.nDuration : 5,
+        'declarations' : vars.declarations ? vars.declarations : ''
     };
 }
 
@@ -109,6 +110,8 @@ PG.loadConstruction = function(cons){
     $("#parameterN_max").val(PG.vars.nMax);
     $("#parameterN_step").val(PG.vars.nStep);
     $("#parameterN_duration").val(PG.vars.nDuration);
+
+    $("#declarations").val(PG.vars.declarations);
 
     PG.initBoard();
 }
@@ -252,6 +255,20 @@ PG.getMathScope = function(){
     return o;
 }
 
+PG.declare = function(){
+    PG.parser.clear();
+    var decText = $("#declarations").val();
+    PG.vars.declarations = decText;
+
+    var decs = decText.split('\n');
+    for (var i in decs){
+        try {
+            PG.parser.eval(decs[i]);
+        } catch (err) {}
+    }
+
+    PG.board.update();
+}
 
 
 
@@ -383,6 +400,7 @@ PG.initBoard = function(){
         PG.tmp.yaxis.setAttribute({visible: false});
     }
 
+    PG.declare();
     PG.pullStoredElements();
     PG.registerBoxEvents();
 }
@@ -435,9 +453,6 @@ PG.addNewElement = function(){
     }
     // Set some defaults based on type
     switch (type){
-        case "declaration":
-            PG.els[id].declaration = "a = 3";
-            break;
         case "functiongraph":
             PG.els[id].funcdef = "x^2";
             PG.els[id].lowerBound = "";
@@ -514,15 +529,6 @@ PG.buildElementHtml = function(ops){
     // ${PG.els[ops.id].panelShown ? '' : "style='display:none'"}
     // Build HTML based on type
     switch (ops.type) {
-        case "declaration":
-            var os = `
-                <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
-                    ${PG.generateElementTitle('Declaration', ops.id)}
-                        <li>Declaration: <input type='text' class='element_declaration' value='${ops.declaration}' size='10'></li>
-                    </ul>
-                </li>
-            `;
-            break;
         case "functiongraph":
             var os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
@@ -681,9 +687,6 @@ PG.buildElementHtml = function(ops){
 PG.generateElementTitle = function(type, id){
     var msg = "...";
     switch (type){
-        case "Declaration":
-            msg = `Declare a variable or function to use in the construction. Examples are: "a = 3" or "f(x) = sin(x^2)". If you are definining, say, a point -- you can set its location to (2, f(2)).`;
-            break;
         case "Function Graph":
             msg = "Enter a function definition, such as x^2 or sin(x). You can change the lower and upper bound of the domain of the function. If you leave the lower/upper bound inputs empty, the domain of the function will be all possible values.";
             break;
@@ -769,11 +772,6 @@ PG.buildBoardElement = function(ops){
     try {
     // Build based on element type
     switch (ops.type){
-        case "declaration":
-            try {
-                PG.parser.eval(ops.declaration);
-            } catch(err){}
-            break;
         case "functiongraph":
             var ats = {
                 fixed: true,
@@ -788,14 +786,26 @@ PG.buildBoardElement = function(ops){
                 (x) => {
                     var s = PG.getMathScope();
                     s.x = x;
-                    return math.eval(ops.funcdef, s);
+                    try {
+                        return math.eval(ops.funcdef, s);
+                    } catch (err){
+                        return 0;
+                    }
                     // return PG.parser.eval(ops.funcdef)
                 },
                 ops.lowerBound ? function(){
-                    return math.eval(ops.lowerBound, PG.getMathScope());
+                    try {
+                        return math.eval(ops.lowerBound, PG.getMathScope());
+                    } catch (err){
+                        return PG.getMathScope().xi;
+                    }
                 } : null,
                 ops.upperBound ? function(){
-                    return math.eval(ops.upperBound, PG.getMathScope());
+                    try {
+                        return math.eval(ops.upperBound, PG.getMathScope());
+                    } catch (err){
+                        return PG.getMathScope().xf;
+                    }
                 } : null
             ], ats)
 
@@ -807,18 +817,34 @@ PG.buildBoardElement = function(ops){
                 (t) => {
                     var s = PG.getMathScope();
                     s.t = t;
-                    return math.eval(ops.x, s);
+                    try {
+                        return math.eval(ops.x, s);
+                    } catch (err){
+                        return 0;
+                    }
                 },
                 (t) => {
                     var s = PG.getMathScope();
                     s.t = t;
-                    return math.eval(ops.y, s);
+                    try {
+                        return math.eval(ops.y, s);
+                    } catch (err){
+                        return 0;
+                    }
                 },
                 function(){
-                    return math.eval(ops.lowerBound, PG.getMathScope());
+                    try {
+                        return math.eval(ops.lowerBound, PG.getMathScope());
+                    } catch (err){
+                        return 0;
+                    }
                 },
                 function(){
-                    return math.eval(ops.upperBound, PG.getMathScope());
+                    try {
+                        return math.eval(ops.upperBound, PG.getMathScope());
+                    } catch (err){
+                        return 1;
+                    }
                 }
             ], {
                 fixed: true,
@@ -834,8 +860,20 @@ PG.buildBoardElement = function(ops){
             var loc = PG.pointToArray(PG.els[id].loc);
 
             PG.tmp[ops.id] = PG.board.create('point', [
-                function(){return math.eval(loc[0], PG.getMathScope());},
-                function(){return math.eval(loc[1], PG.getMathScope());}
+                function(){
+                    try {
+                        return math.eval(loc[0], PG.getMathScope());
+                    } catch (err){
+                        return 0;
+                    }
+                },
+                function(){
+                    try {
+                        return math.eval(loc[1], PG.getMathScope());
+                    } catch (err){
+                        return 0;
+                    }
+                }
             ], {
                 fixed: false,
                 name: ops.name ? ops.name : '',
@@ -871,8 +909,20 @@ PG.buildBoardElement = function(ops){
             var e = PG.pointToArray(ops.endLoc);
             //
             PG.tmp[id] = PG.board.create('line', [
-                function(){return [math.eval(s[0], PG.getMathScope()), math.eval(s[1], PG.getMathScope())]},
-                function(){return [math.eval(e[0], PG.getMathScope()), math.eval(e[1], PG.getMathScope())]},
+                function(){
+                    try {
+                        return [math.eval(s[0], PG.getMathScope()), math.eval(s[1], PG.getMathScope())];
+                    } catch (err){
+                        return [0,0];
+                    }
+                },
+                function(){
+                    try {
+                        return [math.eval(e[0], PG.getMathScope()), math.eval(e[1], PG.getMathScope())];
+                    } catch (err){
+                        return [1,1];
+                    }
+                },
             ], ats);
             // Rig up event listener
 
@@ -913,8 +963,20 @@ PG.buildBoardElement = function(ops){
                 });
             } else {
                 PG.tmp[id] = PG.board.create('text', [
-                    ()=>{return math.eval(loc[0], PG.getMathScope())},
-                    ()=>{return math.eval(loc[1], PG.getMathScope())},
+                    ()=>{
+                        try {
+                            return math.eval(loc[0], PG.getMathScope());
+                        } catch (err){
+                            return 0;
+                        }
+                    },
+                    ()=>{
+                        try {
+                            return math.eval(loc[1], PG.getMathScope())
+                        } catch (err) {
+                            return 0;
+                        }
+                    },
                     textF
                 ], ats);
             }
@@ -935,9 +997,9 @@ PG.buildBoardElement = function(ops){
 
             var s = PG.pointToArray(ops.loc);
             PG.tmp[id] = PG.board.create('circle', [
-                [function(){return math.eval(s[0], PG.getMathScope());},
-                function(){return math.eval(s[1], PG.getMathScope())}],
-                function(){return math.eval(ops.r, PG.getMathScope());}
+                [function(){ try{return math.eval(s[0], PG.getMathScope());}catch(err){return 0;} },
+                function(){ try{return math.eval(s[1], PG.getMathScope());}catch(err){return 0;} }],
+                function(){ try{return math.eval(ops.r, PG.getMathScope());}catch(err){return 1;} }
             ], ats);
             break;
 
@@ -948,7 +1010,11 @@ PG.buildBoardElement = function(ops){
                 let p = ops.loc[parseInt(i)].substr(0);
                 p = PG.pointToArray(p);
                 ps.push(function(){
-                    return [math.eval(p[0], PG.getMathScope()), math.eval(p[1], PG.getMathScope())];
+                    try {
+                        return [math.eval(p[0], PG.getMathScope()), math.eval(p[1], PG.getMathScope())];
+                    } catch (err){
+                        return [0,0];
+                    }
                 });
 
             };

@@ -128,7 +128,7 @@ $(function(){ // On document ready -- Use this to set up web app
                 <li>
                     <h4>
                         Dynamic Parameter
-                        <i class="fa fa-question-circle" aria-hidden="true" data-message="..."></i>
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="You can use the parameter n in your constructions. Doing so will allow you to base constructions off of the n parameter, and you can animate this parameter with the controls below."></i>
                     </h4>
                     <ul>
                         <li>
@@ -140,6 +140,13 @@ $(function(){ // On document ready -- Use this to set up web app
                         <li>Step = <input type='text' size='8' id='parameterN_step'/></li>
                         <li>Duration = <input type='text' size='8' id='parameterN_duration'/></li>
                     </ul>
+                </li>
+                <li>
+                    <h4>
+                        Variable/Function Declarations
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="<p>Declare variables and functions here for use in your construction. For example, you can define f(x) = sin(x)/x below, and then in your construction add a function graph and set the function definition to y = f(x)</p><p>Declare multiple variables/functions by separating declarations with a line break (pressing return).</p>"></i>
+                    </h4>
+                    <textarea id="declarations" rows=4 style='width:90%'></textarea>
                 </li>
                 <!-- <li>
                     <h4>
@@ -163,7 +170,6 @@ $(function(){ // On document ready -- Use this to set up web app
                 <p id='newElementTypeContainer'>
                     <select name="newElementType" id="newElementType">
                         <option value="0">Choose one...</option>
-                        <option value="declaration">Declaration</option>
                         <option value='functiongraph'>Function Graph</option>
                         <option value='curve'>Curve</option>
                         <option value="text">Text</option>
@@ -171,7 +177,7 @@ $(function(){ // On document ready -- Use this to set up web app
                         <option value="line">Line</option>
                         <option value="circle">Circle</option>
                         <option value="polygon">Polygon</option>
-                        <option value="inequality">Inequality</option>
+                        <!-- <option value="inequality">Inequality</option> -->
                     </select>
                     with ID: <input type='text' id='newElementId' size='8'/>
                 </p>

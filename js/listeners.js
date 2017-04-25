@@ -8,7 +8,11 @@ $(function(){
         if (event.keyCode == 27){
             $("body").removeClass("modal-shown")
         }
-        if (event.ctrlKey || event.metaKey) {
+        else if ((event.ctrlKey || event.metaKey) && event.keyCode == 13) {
+            event.preventDefault();
+            PG.declare();
+        }
+        else if (event.ctrlKey || event.metaKey) {
             switch (String.fromCharCode(event.which).toLowerCase()) {
             case 's':
                 event.preventDefault();
@@ -22,7 +26,6 @@ $(function(){
             case 'p':
                 event.preventDefault();
                 $("#playN").trigger('click');
-
             }
         }
     });
@@ -292,6 +295,11 @@ $(function(){
         }, dur/((max-min)/step));
     });
 
+    /* ---------------------------------------------
+    ------ Variable/Function Declarations ----------
+    ---------------------------------------------- */
+    $("#declarations").on("change", PG.declare);
+
 
     /* ---------------------------------------------
     ------ Adding/Dropping/Saving --------------------
@@ -349,12 +357,12 @@ $(function(){
             - bind to ul#elementList, delegate accordingly
     ------------------------ */
 
-    $("#elementList").on('change', '.element_declaration', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
-        PG.els[id].declaration = $(this).val();
-        PG.buildBoardElement(PG.els[id]);
-        PG.board.update();
-    });
+    // $("#elementList").on('change', '.element_declaration', function(){
+    //     var id = $(this).closest('li.elementItem').attr('id');
+    //     PG.els[id].declaration = $(this).val();
+    //     PG.buildBoardElement(PG.els[id]);
+    //     PG.board.update();
+    // });
 
     // WHEN POINT COORDINATES ARE CHANGEd
     $("#elementList").on('change', '.element_pointLoc', function(){
