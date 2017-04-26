@@ -2,6 +2,7 @@
 //@prepros-prepend PG.js
 //@prepros-append listeners.js
 
+
 $(function(){ // On document ready -- Use this to set up web app
 
     // Make sure localStorage Variables are set up.
@@ -12,7 +13,7 @@ $(function(){ // On document ready -- Use this to set up web app
     /* ---------------------------------------
         First, BUILD SIDE WINDOW
     --------------------------------------- */
-    var sb = `
+    var sb = ` 
     <div class="panel-large" id="PGconstructionPanel">
         <div class="panel-large-head">
             <i class='fa ${localStorage['PGconstructionPanelShown'] === "0" ? 'fa-folder' : 'fa-folder-open'}' aria-hidden='false'></i>

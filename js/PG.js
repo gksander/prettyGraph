@@ -1,3 +1,4 @@
+var $, math, JXG;
 // Variable to namespace prettyGraph functions
 var PG = {
     tmp: {},
@@ -16,7 +17,7 @@ PG.setN = function(newval){
     $("#parameterN").val(PG.vars.n);
     try {
         PG.board.update();
-    } catch (err){console.log(err);}
+    } catch (err){}
 }
 
 
@@ -528,9 +529,10 @@ PG.addNewElement = function(){
 PG.buildElementHtml = function(ops){
     // ${PG.els[ops.id].panelShown ? '' : "style='display:none'"}
     // Build HTML based on type
+    var os;
     switch (ops.type) {
         case "functiongraph":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Function Graph', ops.id)}
 
@@ -547,7 +549,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "curve":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Curve', ops.id)}
 
@@ -565,7 +567,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "point":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Point', ops.id)}
 
@@ -580,7 +582,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "line":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Line (Segment)', ops.id)}
 
@@ -598,7 +600,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "text":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Text', ops.id)}
 
@@ -615,7 +617,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "circle":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Circle', ops.id)}
 
@@ -632,7 +634,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "polygon":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Polygon', ops.id)}
                         <li>Points: <ul>
@@ -664,7 +666,7 @@ PG.buildElementHtml = function(ops){
             break;
 
         case "inequality":
-            var os = `
+            os = `
                 <li class='elementItem' id='${ops.id ? ops.id : 'needid'}'>
                     ${PG.generateElementTitle('Inequality', ops.id)}
 

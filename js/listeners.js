@@ -1,8 +1,8 @@
-$(function(){
+$(function(){  
     /* ---------------------------------------------
     ------ GENERAL EVENTS -------------------------
     ---------------------------------------------- */
-
+ 
     // Bind key events
     $(window).on('keydown', function(event) {
         if (event.keyCode == 27){
