@@ -2,6 +2,15 @@ $(function(){
     /* ---------------------------------------------
     ------ GENERAL EVENTS -------------------------
     ---------------------------------------------- */
+
+    // Changing tabs
+    $("#tab-list>div").on("click", function(){
+        $("#tab-list>div").removeClass("active-tab");
+        $(this).addClass("active-tab");
+        var i = $("#tab-list>div").index($(this));  
+        $("#tabs>div").css('display', 'none');
+        $(`#tabs>div:nth-child(${i+1})`).css('display', 'block');
+    });
  
     // Bind key events
     $(window).on('keydown', function(event) {

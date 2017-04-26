@@ -87,7 +87,35 @@ body {
 		position: relative;
 	}
 
+    #tab-list {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        border-bottom: 2px solid black;
+        margin-bottom: 30px;
+        >div {
+            font-size: 24px;
+            cursor: pointer;
+            &.active-tab {
+                color: @primary-dark;
+                font-size: 28px;
+            }
+            &:hover {
+                color: rgba(50,50,50,0.8);
+            }
+        }
+    }
+    #tabs {
+        >div:not(:first-child) {
+            display: none;
+        }
+    }
+
 }
+
+
+
+
 #content-container {
 	margin-left: @sidebar-width-desktop + 20px;
 	margin-top: @topbar-height-desktop;
