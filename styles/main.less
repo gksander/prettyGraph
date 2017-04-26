@@ -87,18 +87,25 @@ body {
 		position: relative;
 	}
 
+    @tab-border: 2px solid rgba(50,50,50,0.8);
     #tab-list {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
-        border-bottom: 2px solid black;
+        border-bottom: @tab-border;
         margin-bottom: 30px;
         >div {
-            font-size: 24px;
+            font-size: 26px;
             cursor: pointer;
+            padding: 2px 7px;
             &.active-tab {
                 color: @primary-dark;
-                font-size: 28px;
+                // font-size: 28px;
+                border: @tab-border;
+                border-bottom: none;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+
             }
             &:hover {
                 color: rgba(50,50,50,0.8);
@@ -311,7 +318,7 @@ ul#windowList, ul#constructionList {
     > li > h4 {
         margin-bottom: 5px;
         margin-top: 8px;
-        margin-left: -5px;
+        // margin-left: -5px;
         color: @primary-dark;
         font-weight: bold;
         border-bottom: 1px solid @primary-dark;
