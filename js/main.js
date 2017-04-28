@@ -15,11 +15,12 @@ $(function(){ // On document ready -- Use this to set up web app
     PG.loadConstructionList(localStorage['PGcurrentConstruction']);
     PG.getConstruction(localStorage['PGcurrentConstruction']);
     PG.loadConstruction(localStorage['PGcurrentConstruction']);
+    PG.showStyles('');
 
 
 }); // End of Document Ready
 
 // Configuration Options for JSXGraph
 JXG.Options.layer = {numlayers: 20, text: 9, point: 9, glider: 9, arc: 8, line: 9, circle: 6,
-          curve: 7, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 8, ticks: 2, grid: 1, image: 0, trace: 0};
+          curve: 7, turtle: 5, polygon: 3, sector: 3, angle: 3, integral: 3, axis: 7, ticks: 2, grid: 1, image: 0, trace: 0};
 JXG.Options.text.fontSize = 20;

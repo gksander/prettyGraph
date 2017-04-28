@@ -169,29 +169,7 @@
                                 <li>Show y-axes: <input type="range" id="graphShowYAxis" min='0' max='1' value='1' class='short-range'></li>
                             </ul>
                         </li>
-                        <li>
-                            <h4>
-                                Dynamic Parameter
-                                <i class="fa fa-question-circle" aria-hidden="true" data-message="You can use the parameter n in your constructions. Doing so will allow you to base constructions off of the n parameter, and you can animate this parameter with the controls below."></i>
-                            </h4>
-                            <ul>
-                                <li>
-                                    n = <input type='text' size='8' id='parameterN'/>
-                                    <button type='button' id='playN'>Play</button>
-                                </li>
-                                <li>Min = <input type='text' size='8' id='parameterN_min'/></li>
-                                <li>Max = <input type='text' size='8' id='parameterN_max'/></li>
-                                <li>Step = <input type='text' size='8' id='parameterN_step'/></li>
-                                <li>Duration = <input type='text' size='8' id='parameterN_duration'/></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <h4>
-                                Variable/Function Declarations
-                                <i class="fa fa-question-circle" aria-hidden="true" data-message="<p>Declare variables and functions here for use in your construction. For example, you can define f(x) = sin(x)/x below, and then in your construction add a function graph and set the function definition to y = f(x)</p><p>Declare multiple variables/functions by separating declarations with a line break (pressing return).</p>"></i>
-                            </h4>
-                            <textarea id="declarations" rows=4 style='width:90%'></textarea>
-                        </li>
+                        
                         <!-- <li>
                             <h4>
                                 Global Font Size
@@ -200,7 +178,43 @@
                         </li> -->
                     </ul>
                 </div>
-                <div>
+                <div> <!-- Element Container -->
+                    
+                    <h3>
+                        Dynamic Parameter
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="You can use the parameter n in your constructions. Doing so will allow you to base constructions off of the n parameter, and you can animate this parameter with the controls below."></i>
+                    </h3>
+
+                    <p>
+                        <i class="fa fa-play-circle-o" id='playN' aria-hidden="true"></i>
+                        <input type="range" id='n_slider' min='-3' max='3' step='0.2'>
+                        n = <span id='n_value'></span> 
+                        &nbsp;&nbsp;
+                        <i class="fa fa-pencil" aria-hidden="true" id="n_edit"></i>
+                    </p>
+
+
+                    <ul id="n_bounds" style="display: none;">
+                        <li>
+                            n = <input type='text' size='8' id='parameterN'/>
+                        </li>
+                        <li>Min = <input type='text' size='8' id='parameterN_min'/></li>
+                        <li>Max = <input type='text' size='8' id='parameterN_max'/></li>
+                        <li>Step = <input type='text' size='8' id='parameterN_step'/></li>
+                        <li>Duration = <input type='text' size='8' id='parameterN_duration'/></li>
+                    </ul>
+
+                    <h3>
+                        Declarations
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="<p>Declare variables and functions here for use in your construction. For example, you can define f(x) = sin(x)/x below, and then in your construction add a function graph and set the function definition to y = f(x)</p><p>Declare multiple variables/functions by separating declarations with a line break (pressing return).</p>"></i>
+                    </h3>
+                    <textarea id="declarations" rows=4 style='width:90%'></textarea>
+
+                    
+                    <h3>
+                        Add New Elements
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="Add new objects to the plot."></i>
+                    </h3>
                     <div id="addNew">
                         <p id='newElementTypeContainer'>
                             <select name="newElementType" id="newElementType">
@@ -215,9 +229,7 @@
                                 <!-- <option value="inequality">Inequality</option> -->
                             </select>
                             with ID: <input type='text' id='newElementId' size='8'/>
-                        </p>
-                        <p>
-                            <button type='button' id='newElementAddButton' class='btn'>Create the Element</button>
+                            <button type='button' id='newElementAddButton'>Go!</button>
                         </p>
                     </div>
 
@@ -226,7 +238,94 @@
                     </ul>
                 </div>
                 <div>
-                    Visual Editor
+                    
+                    <p id="currentElement">
+                        Select an Element
+                    </p>
+
+                    <table id="stylesTable">
+                        <tr>
+                            <td>Size:</td>
+                            <td>
+                                <input id="style_size" class='long-range' type='range' min='1' max='9' step='1' value='3'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Name:</td>
+                            <td>
+                                <input id="style_name" type='text' size=9 value='' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Color:</td>
+                            <td>
+                                <input id="style_color" class="jscolor" value="000000" size='8'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Stroke Color:</td>
+                            <td><input id="style_strokeColor" class="jscolor" value="" size='8'></td>
+                        </tr>
+                        <tr>
+                            <td>Stroke Width:</td>
+                            <td><input id="style_strokeWidth" class='long-range' type='range' min='0' max='7' step='1' value='3'/></td>
+                        </tr>
+                        <tr>
+                            <td>Dash:</td>
+                            <td>
+                                <input id="style_dash" class='long-range' type='range' min='0' max='6' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Arrow:</td>
+                            <td>
+                                <input id="style_arrow" class='medium-range' type='range' min='0' max='3' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ends:</td>
+                            <td>
+                                <input id="style_ends" class='medium-range' type='range' min='0' max='3' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fill Color:</td>
+                            <td>
+                                <input id="style_fillColor" class="jscolor" value="FF0000" size='8'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fill Opacity:</td>
+                            <td>
+                                <input id="style_fillOpacity" class='long-range' type='range' min='0' max='1' step='0.01' value='0' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Font Size:</td>
+                            <td>
+                                <input id="style_fontSize" type='text' size='8' value='18'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Anchor X:</td>
+                            <td>
+                                <input id="style_anchorX" class='short-range' type='range' min='-1' max='1' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Anchor Y:</td>
+                            <td>
+                                <input id="style_anchorY" class='short-range' type='range' min='-1' max='1' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Visible:</td>
+                            <td>
+                                <input id="style_visible" type='range' class='short-range' min='0' max='1' step='1' value='1'/>
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
 
             </div>

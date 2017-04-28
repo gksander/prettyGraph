@@ -6,15 +6,13 @@ var PG = {
     els: {},
     currentConstruction: "",
     nInterval: null,
-    // getMathScope: function(){
-    //     var bb = PG.board.getBoundingBox();
-    //     return {n: PG.vars.n, xi: bb[0], xf: bb[2], yi: bb[3], yf: bb[1]};
-    // },
+    currentEl : '',
     parser: math.parser()
 };
 PG.setN = function(newval){
     PG.vars.n = newval;
-    $("#parameterN").val(PG.vars.n);
+    $("#parameterN, #n_slider").val(PG.vars.n);
+    $("#n_value").html(PG.vars.n.toFixed(2));
     try {
         PG.board.update();
     } catch (err){}
@@ -106,6 +104,13 @@ PG.loadConstruction = function(cons){
     // Global FontSize
     // $("#graphFontSize").val(PG.vars.globalFontSize);
     $("#graphLabelFontSize").val(PG.vars.labelFontSize);
+    $("#n_slider")
+        .val(PG.vars.n)
+        .attr({
+            min: PG.vars.nMin,
+            max: PG.vars.nMax,
+            step: PG.vars.nStep
+        });
     $("#parameterN").val(PG.vars.n);
     $("#parameterN_min").val(PG.vars.nMin);
     $("#parameterN_max").val(PG.vars.nMax);
@@ -150,6 +155,75 @@ PG.registerBoxEvents = function(){
 
     });
 };
+
+PG.elementOnDown = function(e){
+    var id = null;
+    for (var i in PG.tmp) {
+        if (PG.tmp[i] === this) {
+            id = i;
+            break;
+        }
+    }
+    
+    // If we find an id...
+    if (id!==null){
+        PG.currentEl = id;
+        PG.showStyles(id);
+    }
+}
+
+PG.showStyles = function(id){
+    PG.currentEl = id;
+    // Determine the type of element
+    var type = PG.els[id] ? PG.els[id].type : '';
+
+    // Change header
+    $("#currentElement").html(type=='' ? 'Select an Element' : `(<i>${type}</i>) ${id}`);
+
+    // Hide all styles
+    $("table#stylesTable tr").hide();
+    // If no type, no need to continue
+    if (type=='') return false;
+
+    // Determine which to show based on type
+    var toshow = [];
+    switch (type){
+        case "functiongraph":
+            toshow = ['strokeWidth', 'strokeColor', 'dash', 'visible'];
+            break;
+        case "curve":
+            toshow = ['strokeColor', 'strokeWidth', 'dash', 'visible'];
+            break;
+        case "text":
+            toshow = ['fontSize', 'color', 'anchorX', 'anchorY', 'visible'];
+            break;
+        case "point":
+            toshow = ['size', 'name', 'color', 'visible'];
+            break;
+        case "line":
+            toshow = ['strokeWidth', 'strokeColor', 'dash', 'arrow', 'ends', 'visible'];
+            break;
+        case "circle":
+            toshow = ['strokeWidth', 'strokeColor', 'fillColor', 'fillOpacity', 'dash', 'visible'];
+            break;
+        case "polygon":
+            toshow = ['strokeWidth', 'strokeColor', 'fillColor', 'fillOpacity', 'visible'];
+        default: 
+            break;
+    }
+    // Show the styles and return
+    for (var i in toshow){
+        if (['strokeColor', 'color', 'fillColor'].indexOf(toshow[i]) > -1){
+            $(`#style_${toshow[i]}`)[0].jscolor.fromString(PG.els[id][toshow[i]]);
+        } else {
+            $(`#style_${toshow[i]}`).val(PG.els[id][toshow[i]]);
+        }
+        
+        $(`#style_${toshow[i]}`).closest('tr').show();
+    }
+    return;
+
+}
 
 
 
@@ -521,6 +595,7 @@ PG.addNewElement = function(){
 
     PG.buildElementHtml(PG.els[id]);
     PG.buildBoardElement(PG.els[id]);
+    PG.showStyles(id);
 };
 
 
@@ -539,10 +614,6 @@ PG.buildElementHtml = function(ops){
                         <li>y= <input type='text' class='element_funcDef' value='${ops.funcdef}' size='10'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
                         <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
-                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
-                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
-                        <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -557,10 +628,6 @@ PG.buildElementHtml = function(ops){
                         <li>y(t): <input type='text' class='element_curveY' value='${ops.y}' size='12'></li>
                         <li>Lower Bound: <input type='text' class='element_funcLB' value='${ops.lowerBound}' size=5/></li>
                         <li>Upper Bound: <input type='text' class='element_funcUB' value='${ops.upperBound}' size=5/></li>
-                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
-                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
-                        <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -572,10 +639,6 @@ PG.buildElementHtml = function(ops){
                     ${PG.generateElementTitle('Point', ops.id)}
 
                         <li>Location: <input type='text' class='element_pointLoc' size='12' value='${ops.loc}'/></li>
-                        <li>${PG.buildAestheticComponent('size', {size: ops.size})}</li>
-                        <li>${PG.buildAestheticComponent('name', {name: ops.name})}</li>
-                        <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -588,12 +651,6 @@ PG.buildElementHtml = function(ops){
 
                         <li>Start Location: <input type='text' class='element_segmentStartLoc' size=12 value='${ops.startLoc}'></li>
                         <li>Ending Location: <input type='text' class='element_segmentEndLoc' size=12 value='${ops.endLoc}'></li>
-                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
-                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
-                        <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
-                        <li>${PG.buildAestheticComponent('arrow', {arrow: ops.arrow})}</li>
-                        <li>${PG.buildAestheticComponent('end', {arrow: ops.end})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -606,11 +663,6 @@ PG.buildElementHtml = function(ops){
 
                         <li>Text: <input type='text' class='element_text' size=15 value='${ops.text}'/></li>
                         <li>Location: <input type='text' class='element_textLoc' size='12' value='${ops.loc}'/></li>
-                        <li>${PG.buildAestheticComponent('fontSize', {fontSize: ops.fontSize})}</li>
-                        <li>${PG.buildAestheticComponent('color', {color: ops.color})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
-                        <li>${PG.buildAestheticComponent('anchorX', {anchorX: ops.anchorX})}</li>
-                        <li>${PG.buildAestheticComponent('anchorY', {anchorY: ops.anchorY})}</li>
                     </ul>
                 </li>
             `;
@@ -623,11 +675,6 @@ PG.buildElementHtml = function(ops){
 
                         <li>Center: <input type='text' class='element_circleLoc' size=8 value='${ops.loc}'></li>
                         <li>Radius: <input type='text' class='element_circleR' size='8' value='${ops.r}'/></li>
-                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
-                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
-                        <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
-                        <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
-                        <li>${PG.buildAestheticComponent('dash', {dash: ops.dash})}</li>
                     </ul>
                 </li>
             `;
@@ -655,11 +702,6 @@ PG.buildElementHtml = function(ops){
             </li>`;
 
             os += `
-                        <li>${PG.buildAestheticComponent('strokeWidth', {strokeWidth: ops.strokeWidth})}</li>
-                        <li>${PG.buildAestheticComponent('strokeColor', {strokeColor: ops.strokeColor})}</li>
-                        <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
-                        <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -672,9 +714,6 @@ PG.buildElementHtml = function(ops){
 
                         <li>Line: <input type='text' class='element_ineqLine' size=8 value='${ops.line}'></li>
                         <li>Inverse: <input class='element_ineqInvert' type='checkbox' ${ops.inverse ? 'checked' : ''} /></li>
-                        <li>${PG.buildAestheticComponent('fillColor', {fillColor: ops.fillColor})}</li>
-                        <li>${PG.buildAestheticComponent('fillOpacity', {fillOpacity: ops.fillOpacity})}</li>
-                        <li>${PG.buildAestheticComponent('visible', {visible: ops.visible})}</li>
                     </ul>
                 </li>
             `;
@@ -682,7 +721,6 @@ PG.buildElementHtml = function(ops){
 
     }
     $("ul#elementList").prepend(os);
-    jscolor.installByClassName("jscolor");
 }
 
 // This function generates the element list item title AND starting ul tag.
@@ -809,7 +847,9 @@ PG.buildBoardElement = function(ops){
                         return PG.getMathScope().xf;
                     }
                 } : null
-            ], ats)
+            ], ats);
+
+            // PG.tmp[id].on('down', PG.elementOnDown);
 
             break;
 
@@ -1035,6 +1075,8 @@ PG.buildBoardElement = function(ops){
                 fillOpacity: ops.fillOpacity
             });
 
+
+
             break;
 
         case "inequality":
@@ -1048,10 +1090,12 @@ PG.buildBoardElement = function(ops){
             PG.tmp[id] = PG.board.create('inequality', [PG.tmp[ops.line]], ats);
 
             break;
+        }
 
-    }
+        // Once element is constructed, add "click" event listener to it.
+        PG.tmp[id].on('down', PG.elementOnDown);
 
-    }catch (err){}
+    } catch (err){}
 }
 
 

@@ -267,18 +267,31 @@ $(function(){
     ------ Parameter N   --------------------
     ---------------------------------------------- */
 
+    $("#n_slider").on('input', function(){
+        $("#n_value").html($(this).val());
+        PG.setN(parseFloat($(this).val()));
+    });
+    $("#n_slider").trigger('input');
+
+    $("#n_edit").on('click', function(){
+        $("#n_bounds").slideToggle();
+    });
+
     // Change Listeners
     $("#parameterN").on('change', function(){
         PG.setN(math.eval($(this).val()));
     });
     $("#parameterN_min").on('change', function(){
         PG.vars.nMin = math.eval($(this).val());
+        $("#n_slider").attr('min', PG.vars.nMin);
     });
     $("#parameterN_max").on('change', function(){
         PG.vars.nMax = math.eval($(this).val());
+        $("#n_slider").attr('max', PG.vars.nMax);
     });
     $("#parameterN_step").on('change', function(){
         PG.vars.nStep = math.eval($(this).val());
+        $("#n_slider").attr('step', PG.vars.nStep);
     });
     $("#parameterN_duration").on('change', function(){
         PG.vars.nDuration = math.eval($(this).val());
@@ -460,28 +473,6 @@ $(function(){
         PG.board.update();
     });
 
-    // When anchorX is changed
-    $("#elementList").on("input", '.element_anchorX', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
-        var val = $(this).val();
-        PG.els[id].anchorX = val;
-
-        PG.tmp[id].setAttribute({
-            anchorX: val == -1 ? 'right' : (val == 0 ? 'middle' : 'left')
-        });
-    });
-
-    // When anchorY is changed
-    $("#elementList").on("input", '.element_anchorY', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
-        var val = $(this).val();
-        PG.els[id].anchorY = val;
-
-        PG.tmp[id].setAttribute({
-            anchorY: val == -1 ? 'top' : (val == 0 ? 'middle' : 'bottom')
-        });
-    });
-
     // When Circle position is changed
     $("#elementList").on("change", '.element_circleLoc', function(){
         var id = $(this).closest('li.elementItem').attr('id');
@@ -577,33 +568,35 @@ $(function(){
         // PG.board.fullUpdate();
     });
 
-    // WHEN SIZE INPUT IS CHANGEd
-    $("#elementList").on('input', '.element_sizeRange', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+
+    /* ------------------------------------------
+        LISTENERS FOR STYLE CHANGES
+    ------------------------------------------ */
+
+    // Size
+    $("#style_size").on('input', function(){
+        var id = PG.currentEl;
         var size = $(this).val();
         PG.els[id].size = size;
         PG.tmp[id].setAttribute({size: size});
     });
-
-    // WHEN NAME INPUT IS CHANGEd
-    $("#elementList").on('change', '.element_nameInput', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Name
+    $("#style_name").on('change',  function(){
+        var id = PG.currentEl;
         var name = $(this).val();
         PG.els[id].name = name;
         PG.tmp[id].setAttribute({name: name});
     });
-
-    // WHEN COLOR INPUT IS CHANGEd
-    $("#elementList").on('change', '.element_colorInput', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Color
+    $("#style_color").on('change', function(){
+        var id = PG.currentEl;
         var color = $(this).val();
         PG.els[id].color = color;
         PG.tmp[id].setAttribute({color: `#${color}`});
     });
-
-    // WHEN STROKE COLOR INPUT IS CHANGEd
-    $("#elementList").on('change', '.element_strokeColorInput', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Stroke Color
+    $("#style_strokeColor").on('change', function(){
+        var id = PG.currentEl;
         var color = $(this).val();
         PG.els[id].strokeColor = color;
         PG.tmp[id].setAttribute({strokeColor: `#${color}`});
@@ -615,27 +608,9 @@ $(function(){
             }
         }
     });
-
-    // WHEN FILL COLOR INPUT IS CHANGEd
-    $("#elementList").on('change', '.element_fillColorInput', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
-        var color = $(this).val();
-        PG.els[id].fillColor = color;
-        PG.tmp[id].setAttribute({fillColor: `#${color}`});
-    });
-
-    // WHEN FILL OPACITY INPUT IS CHANGEd
-    $("#elementList").on('input', '.element_fillOpacity', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
-        var opac = $(this).val();
-        PG.els[id].fillOpacity = opac;
-        PG.tmp[id].setAttribute({fillOpacity: parseFloat(opac)});
-        PG.board.update();
-    });
-
-    // WHEN STROKE WIDTH IS CHANGEd
-    $("#elementList").on('input', '.element_strokeWidth', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Stroke Width
+    $("#style_strokeWidth").on('input', function(){
+        var id = PG.currentEl;
         var strokeWidth = $(this).val();
         PG.els[id].strokeWidth = strokeWidth;
         PG.tmp[id].setAttribute({strokeWidth: strokeWidth});
@@ -647,18 +622,16 @@ $(function(){
             }
         }
     });
-
-    // WHEN DASH IS CHANGEd
-    $("#elementList").on('input', '.element_dash', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Dash
+    $("#style_dash").on('input', function(){
+        var id = PG.currentEl;
         var dash = $(this).val();
         PG.els[id].dash = dash;
         PG.tmp[id].setAttribute({dash: dash});
     });
-
-    // WHEN ARROW IS CHANGEd
-    $("#elementList").on('input', '.element_arrow', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Arrow
+    $("#style_arrow").on('input', function(){
+        var id = PG.currentEl;
         var arrow = $(this).val();
         PG.els[id].arrow = arrow;
         PG.tmp[id].setAttribute({
@@ -666,10 +639,9 @@ $(function(){
             lastArrow: (arrow == 1 || arrow == 3)
         });
     });
-
-    // WHEN END IS CHANGEd
-    $("#elementList").on('input', '.element_end', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Ending
+    $("#style_ends").on('input', function(){
+        var id = PG.currentEl;
         var end = $(this).val();
         PG.els[id].end = end;
         PG.tmp[id].setAttribute({
@@ -677,27 +649,55 @@ $(function(){
             straightLast: (end == 1 || end == 3)
         });
     });
-
-    // WHEN FONTSIZE IS CHANGEd
-    $("#elementList").on('change', '.element_fontSize', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+    // Fill Color
+    $("#style_fillColor").on('change', function(){
+        var id = PG.currentEl;
+        var color = $(this).val();
+        PG.els[id].fillColor = color;
+        PG.tmp[id].setAttribute({fillColor: `#${color}`});
+    });
+    // Fill Opacity
+    $("#style_fillOpacity").on('input', function(){
+        var id = PG.currentEl;
+        var opac = $(this).val();
+        PG.els[id].fillOpacity = opac;
+        PG.tmp[id].setAttribute({fillOpacity: parseFloat(opac)});
+        PG.board.update();
+    });
+    // Font Size
+    $("#style_fontSize").on('change', function(){
+        var id = PG.currentEl;
         var fontSize = parseInt($(this).val());
         PG.els[id].fontSize = fontSize;
         PG.tmp[id].setAttribute({fontSize: fontSize});
     });
+    // Anchor X
+    $("#style_anchorX").on("input", function(){
+        var id = PG.currentEl;
+        var val = $(this).val();
+        PG.els[id].anchorX = val;
 
-    // WHEN VISIBLE IS CHANGEd
-    $("#elementList").on('input', '.element_visible', function(){
-        var id = $(this).closest('li.elementItem').attr('id');
+        PG.tmp[id].setAttribute({
+            anchorX: val == -1 ? 'right' : (val == 0 ? 'middle' : 'left')
+        });
+    });
+    // Anchor Y
+    $("#style_anchorY").on("input", function(){
+        var id = PG.currentEl;
+        var val = $(this).val();
+        PG.els[id].anchorY = val;
+
+        PG.tmp[id].setAttribute({
+            anchorY: val == -1 ? 'top' : (val == 0 ? 'middle' : 'bottom')
+        });
+    });
+    // Visible
+    $("#style_visible").on('input', function(){
+        var id = PG.currentEl;
         var visible = $(this).val();
         PG.els[id].visible = visible;
         PG.tmp[id].setAttribute({visible: visible==0 ? false : true});
     });
-
-
-    // element_sliderMin
-
-
 
 
 
