@@ -367,7 +367,7 @@ $(function(){
         $(this).toggleClass("fa-folder fa-folder-open");
 
         PG.els[id].panelShown = $(this).hasClass("fa-folder-open");
-        $(this).closest("li.elementItem").find("ul").slideToggle();
+        $(this).closest("li.elementItem").find("ul").first().toggle();
     });
 
 

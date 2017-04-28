@@ -329,6 +329,12 @@ ul#windowList, ul#constructionList {
         font-weight: bold;
         border-bottom: 1px solid @primary-dark;
     }
+    >li {
+        padding: 3px 0px;
+        ul > li {
+            padding: 3px 0px;
+        }
+    }
 }
 
 ul#elementList {
@@ -342,6 +348,7 @@ ul#elementList {
             border-bottom: 1px solid @primary-dark;
             font-weight: bold;
             color: @primary-dark;
+            margin: 8px 15px;
         }
         ul {
             // padding-left: 10px;

@@ -359,6 +359,7 @@ PG.declare = function(){
 PG.initBoard = function(){
     // Clear board if possible
     try{
+        $("#elementList").empty();
         $("#box").empty();
         JXG.JSXGraph.freeBoard(PG.board);
     } catch(err){}
