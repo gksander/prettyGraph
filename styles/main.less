@@ -7,8 +7,8 @@
 // Responsiveness
 @topbar-height-desktop: 45px;
 @topbar-height-mobile: 40px;
-@sidebar-width-desktop: 450px;
-@sidebar-width-mobile: 350px;
+@sidebar-width-desktop: 400px;
+@sidebar-width-mobile: 320px;
 
 @breakwidth: 1000px;
 @trans-time: 400ms;
@@ -173,10 +173,12 @@ body {
         width: @sidebar-width-mobile;
 		top: @topbar-height-mobile;
         margin-left:0px;
-		opacity: 0.95;
+		opacity: 0.97;
 		z-index: 99;
 		transition: left @trans-time;
 		background-color: white;
+
+        box-shadow: 5px 0px 5px #888888;
 	}
 	#content-container {
 		margin-left: 0;
@@ -190,10 +192,10 @@ body {
 			left: 0px;
 			transition: left @trans-time;
 		}
-		#content-overlay{
-			height: 100vh !important;
-			transition: height @trans-time;
-		}
+		// #content-overlay{
+		// 	height: 100vh !important;
+		// 	transition: height @trans-time;
+		// }
 	}
 
 }
