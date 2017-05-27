@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pretty Grapher</title>
+
+    <!-- jQuery CDN -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous">
+    </script>
+
+    <!-- MathJax CDN. Configure to allow ASCIIMath, $...$ delimeters -->
+    <script type="text/x-mathjax-config">
+	    MathJax.Hub.Config({
+	      tex2jax: {
+    	        inlineMath: [['$','$'], ['\\(','\\)']],
+    	        processEscapes: true
+            },
+            asciimath2jax: {
+                delimiters: [['`','`']]
+            }
+
+	    });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- JSXGraph CDN -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.99.5/jsxgraphcore.js"></script>
+    <!-- MathJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.10.0/math.min.js"></script>
+    <!-- jscolor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.min.js"></script>
+    <!-- Custom Script to Handle Pretty Graphing -->
+    <script src="js/main-dist.js"></script>
+
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Link PrettyGraph CSS -->
+    <link rel="stylesheet" href="styles/main.css">
+
+    <!-- VueJS -->
+    <script src="https://unpkg.com/vue"></script>
+
+
+</head>
+<body>
+
+    <div class="container">
+
+        <div id="topbar">
+            <div id="menubutton">
+                <i id='menu-bars' class="fa fa-bars" aria-hidden="true"></i>
+            </div>
+
+            <div id="logo">
+    			Pretty Grapher
+    		</div>
+
+    		<div>
+                <a href="https://github.com/gksander" target="_blank" style='text-decoration:none; font-style:italic;'>Grant Sander</a>
+            </div>
+        </div>
+
+        <div id="sidebar">
+            
+            <div id="tab-list">
+                <div class="active-tab"><i class="fa fa-floppy-o" aria-hidden="true"></i></div>
+                <div><i class="fa fa-pencil" aria-hidden="true"></i></div>
+                <div><i class="fa fa-area-chart" aria-hidden="true"></i></div>
+                <div><i class="fa fa-paint-brush" aria-hidden="true"></i></div>
+            </div>
+            <div id="tabs">
+                
+                <div>
+                    <ul id='constructionList'>
+                        <li>
+                            <h4>
+                                Load Construction
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message='Load a previously saved construction. Select "New Construction" to start a fresh construction.'></i>
+                            </h4>
+                            Load: <select id='PGconstructionSelectList'></select> <br/>
+                        </li>
+                        <li>
+                            <h4>
+                                Save Construction
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="Save your construction. Make sure to name it first. If you give it a name that already exists, it will overwrite that construction."></i>
+                            </h4>
+                            <p>Save Construction as: <input type='text' id='PGconstructionName'/> </p>
+                            <p><button class='btn btn-block' id='PGsaveConstruction' type='button'>Save Construction</button></p>
+                        </li>
+                        <li>
+                            <h4>
+                                Delete Construction
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="This will delete the current construction. Be careful."></i>
+                            </h4>
+                            <p>
+                                <button class='btn btn-block btn-danger' type='button' id='PGdeleteConstruction'>Delete Construction</button>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <ul id='windowList'>
+                        <li>
+                            <h4>
+                                Graph Width/Height (in pixels)
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="This will change the width and height of the graphing window (in pixels)."></i>
+                            </h4>
+                            <input type="text" id="graphWidth" class="graphSize" size='8'> px /
+                            <input type="text" id="graphHeight" class="graphSize" size='8'> px
+                        </li>
+                        <li>
+                            <h4>
+                                Graph Bounds
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="Here you can manually change the bounds of the graph. Notice that if you drag the graph, the bounds will be updated here."></i>
+                            </h4>
+                            x from <input type="text" id="graphxMin" class="graphBounds" size='8'> to <input type="text" id="graphxMax" class="graphBounds" size='8'> <br/>
+                            y from <input type="text" id="graphyMin" class="graphBounds" size='8'> to <input type="text" id="graphyMax" class="graphBounds" size='8'>
+                        </li>
+                        <li>
+                            <h4>
+                                Distance Between Ticks (X/Y)
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="Choose the distance between tick marks. If you set this to 2/2 there will be a major tick mark (and numerical label) every 2 units. The number of ticks in the X and Y direction do not have to match. Set these to 0 if you do not want <em>any</em> tick marks."></i>
+                            </h4>
+                            <input type="text" id="graphXTicksDistance" class="ticksDistance" size='8'> / <input type="text" id="graphYTicksDistance" class="ticksDistance" size='8'>
+                            <label><input type='checkbox' id='graphPiTicks'/>Pi Ticks</input></label>
+                        </li>
+                        <li>
+                            <h4>
+                                Number of Minor Ticks (X/Y)
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message='"Minor Ticks" are the tick marks between the numbered tick marks. Set these to 0 if you do not want any minor tick marks.'></i>
+                            </h4>
+                            <input type="text" id="graphXMinorTicks" class="graphMinorTicks" size='8'> / <input type="text" id="graphYMinorTicks" class="graphMinorTicks" size='8'>
+                        </li>
+                        <li>
+                            <h4>
+                                Axis Labels
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="These will set the labels for the axes. You can use $'s to use standard LaTeX notation (like $\\frac{x}{2}$), or use \` to use ASCIIMath input (such as \`x/2\`)."></i>
+                            </h4>
+                            x-axis: <input type="text" id="graphxLabel" class="axisLabel" size='8'> <br>
+                            y-axis: <input type="text" id="graphyLabel" class="axisLabel" size='8'> Vertical? <input type="checkbox" id="verticalyLabel">
+                        </li>
+                        <li>
+                            <h4>
+                                Axis Styles
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="Here you can do additional styling on the axes, such as change the thickness or the color."></i>
+                            </h4>
+                            <ul>
+                                <li>
+                                    Axis Thickness: <input type='range' class='long-range' id='graphAxesThickness' min='1' max='9' value='2' >
+                                </li>
+                                <li>
+                                    Axis Color: <input class='jscolor' id='graphAxesColor' value='000000'>
+                                </li>
+                                <li>
+                                    Label Size: <input id='graphLabelFontSize' type='text' size='8'/>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h4>
+                                Visibility
+                                <i class="fa fa-question-circle" aria-hidden="true" data-message="Here you can hide either (or both) of the axes. If you hide the y-axis and keep the x-axis shown, the ticks will adjust to create a number line."></i>
+                            </h4>
+                            <ul>
+                                <li>Show x-axes: <input type="range" id="graphShowXAxis" min='0' max='1' value='1' class='short-range'></li>
+                                <li>Show y-axes: <input type="range" id="graphShowYAxis" min='0' max='1' value='1' class='short-range'></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- <li>
+                            <h4>
+                                Global Font Size
+                            </h4>
+                            <input type="text" id="graphFontSize" size='8'> px
+                        </li> -->
+                    </ul>
+                </div>
+                <div> <!-- Element Container -->
+                    
+                    <h3>
+                        Dynamic Parameter
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="You can use the parameter n in your constructions. Doing so will allow you to base constructions off of the n parameter, and you can animate this parameter with the controls below."></i>
+                    </h3>
+
+                    <p>
+                        <i class="fa fa-play-circle-o" id='playN' aria-hidden="true"></i>
+                        <input type="range" id='n_slider' min='-3' max='3' step='0.2'>
+                        <i>n</i> = <span id='n_value'></span> 
+                        &nbsp;&nbsp;
+                        <i class="fa fa-pencil" aria-hidden="true" id="n_edit"></i>
+                    </p>
+
+
+                    <ul id="n_bounds" style="display: none;">
+                        <li>
+                            <i>n</i> = <input type='text' size='8' id='parameterN'/>
+                        </li>
+                        <li>Min = <input type='text' size='8' id='parameterN_min'/></li>
+                        <li>Max = <input type='text' size='8' id='parameterN_max'/></li>
+                        <li>Step = <input type='text' size='8' id='parameterN_step'/></li>
+                        <li>Duration = <input type='text' size='8' id='parameterN_duration'/></li>
+                    </ul>
+
+                    <h3>
+                        Declarations
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="<p>Declare variables and functions here for use in your construction. For example, you can define f(x) = sin(x)/x below, and then in your construction add a function graph and set the function definition to y = f(x)</p><p>Declare multiple variables/functions by separating declarations with a line break (pressing return).</p>"></i>
+                    </h3>
+                    <textarea id="declarations" rows=4 style='width:90%'></textarea>
+
+                    
+                    <h3>
+                        Add New Elements
+                        <i class="fa fa-question-circle" aria-hidden="true" data-message="Add new objects to the plot."></i>
+                    </h3>
+                    <div id="addNew">
+                        <p id='newElementTypeContainer'>
+                            <select name="newElementType" id="newElementType">
+                                <option value="0">Choose one...</option>
+                                <option value='functiongraph'>Function Graph</option>
+                                <option value='curve'>Curve</option>
+                                <option value="text">Text</option>
+                                <option value='point'>Point</option>
+                                <option value="line">Line</option>
+                                <option value="circle">Circle</option>
+                                <option value="polygon">Polygon</option>
+                                <!-- <option value="inequality">Inequality</option> -->
+                            </select>
+                            with ID: <input type='text' id='newElementId' size='8'/>
+                            <button type='button' id='newElementAddButton'>Go!</button>
+                        </p>
+                    </div>
+
+                    <ul id='elementList'>
+
+                    </ul>
+                </div>
+                <div>
+                    
+                    <p id="currentElement">
+                        Select an Element
+                    </p>
+
+                    <table id="stylesTable">
+                        <tr>
+                            <td>Size:</td>
+                            <td>
+                                <input id="style_size" class='long-range' type='range' min='1' max='9' step='1' value='3'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Name:</td>
+                            <td>
+                                <input id="style_name" type='text' size=9 value='' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Color:</td>
+                            <td>
+                                <input id="style_color" class="jscolor" value="000000" size='8'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Stroke Color:</td>
+                            <td><input id="style_strokeColor" class="jscolor" value="" size='8'></td>
+                        </tr>
+                        <tr>
+                            <td>Stroke Width:</td>
+                            <td><input id="style_strokeWidth" class='long-range' type='range' min='0' max='7' step='1' value='3'/></td>
+                        </tr>
+                        <tr>
+                            <td>Dash:</td>
+                            <td>
+                                <input id="style_dash" class='long-range' type='range' min='0' max='6' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Arrow:</td>
+                            <td>
+                                <input id="style_arrow" class='medium-range' type='range' min='0' max='3' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ends:</td>
+                            <td>
+                                <input id="style_ends" class='medium-range' type='range' min='0' max='3' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fill Color:</td>
+                            <td>
+                                <input id="style_fillColor" class="jscolor" value="FF0000" size='8'>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fill Opacity:</td>
+                            <td>
+                                <input id="style_fillOpacity" class='long-range' type='range' min='0' max='1' step='0.01' value='0' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Font Size:</td>
+                            <td>
+                                <input id="style_fontSize" type='text' size='8' value='18'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Anchor X:</td>
+                            <td>
+                                <input id="style_anchorX" class='short-range' type='range' min='-1' max='1' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Anchor Y:</td>
+                            <td>
+                                <input id="style_anchorY" class='short-range' type='range' min='-1' max='1' step='1' value='0'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Visible:</td>
+                            <td>
+                                <input id="style_visible" type='range' class='short-range' min='0' max='1' step='1' value='1'/>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </div> <!-- End #sidebar -->
+
+        <div id="content-container">
+            <div id="content-overlay"></div>
+
+            <div id="box" style='margin:0px auto'></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL -->
+    <div class="modal">
+        <div class="modal-head">
+            <i class="fa fa-times" id="closeModal" aria-hidden="true"></i>
+            <span id="modal-head">Modal Head</span>
+        </div>
+        <div class="modal-body" id="modal-body">Modal Body</div>
+    </div>
+
+
+
+<script>
+    
+</script>
+</body>
+</html>
