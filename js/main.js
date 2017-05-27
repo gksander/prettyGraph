@@ -2,6 +2,8 @@
 //@prepros-prepend PG.js
 //@prepros-append listeners.js
 
+// JXG.Options.text.defaultDisplay  = 'internal';
+// JXG.Options.text.display = 'internal';
 
 $(function(){ // On document ready -- Use this to set up web app
 
