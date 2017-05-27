@@ -149,6 +149,11 @@ body {
 		opacity: 0.3;
 
 		transition: height @trans-time;
+
+        &.modal-shown {
+            height: 100vh !important;
+            transition: height @trans-time;
+        }
 	}
 }
 
@@ -174,7 +179,7 @@ body {
 		top: @topbar-height-mobile;
         margin-left:0px;
 		opacity: 0.97;
-		z-index: 99;
+		z-index: 97;
 		transition: left @trans-time;
 		background-color: white;
 
@@ -417,6 +422,10 @@ ul#elementList {
     .modal-body {
         padding: 10px;
         font-size: 16px;
+    }
+
+    &.modal-shown {
+        visibility: visible;
     }
 }
 
