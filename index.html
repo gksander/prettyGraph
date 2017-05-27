@@ -7,7 +7,6 @@
     <title>Pretty Grapher</title>
 
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="katex/katex.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
@@ -517,13 +516,23 @@
     <!-- Scripts. Link individually in development, pack with Prepros for productions -->
 	
 	<!--<script src="katex/katex.min.js"></script>
+    <link rel="stylesheet" href="katex/katex.min.css">
 	<script src="js/auto-render.min.js"></script>
     <script type="text/javascript" src="js/jsxgraphcore.js"></script>
     <script src="js/math.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/main-dist.js"></script>-->
 
-    <script src="js/packaged-dist.js"></script>
+    <!--<script src="js/packaged-dist.js"></script>-->
+
+    <!-- CDN Version -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.13.1/math.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsxgraph/0.99.5/jsxgraphcore.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/main-dist.js"></script>
 
 </body>
 </html>
